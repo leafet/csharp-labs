@@ -9,7 +9,7 @@ import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "CSharpLabs" / "bin" / "Debug" / "net8.0" / "CSharpLabs.dll"
+APP = ROOT / "CSharpLabs" / "bin" / "Debug" / "net10.0" / "CSharpLabs.dll"
 
 
 def run(*lines: str) -> str:

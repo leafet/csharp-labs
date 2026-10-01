@@ -6,7 +6,7 @@
 
 - [Отчёт в Markdown](Отчёт_ЛР1.md) — исходный отчёт со ссылками на снимки запусков.
 - [Отчёт в HTML](Отчёт_ЛР1.html) — самостоятельный файл со встроенными снимками.
-- [Решение Visual Studio](CSharpLabs.sln) и [проект .NET 8](CSharpLabs/CSharpLabs.csproj).
+- [Решение Visual Studio](CSharpLabs.sln) и [проект .NET 10](CSharpLabs/CSharpLabs.csproj).
 - [Контрольный сценарий](tools/verify_lab1.py) — проверка всех 20 задач и крайних случаев.
 
 Номера 1–20 в консольном меню соответствуют порядку задач в отчёте. В заголовках отчёта указаны номера задач из PDF.
@@ -21,7 +21,7 @@ dotnet run --project CSharpLabs/CSharpLabs.csproj
 python tools/verify_lab1.py
 ```
 
-Нужны .NET 8 SDK и Python 3 для контрольного сценария. Дополнительные пакеты для C# проекта и контрольного сценария не требуются. Для пересборки HTML из Markdown:
+Нужны .NET 10 SDK и Python 3 для контрольного сценария. Дополнительные пакеты для C# проекта и контрольного сценария не требуются. Для пересборки HTML из Markdown:
 
 ```powershell
 python tools/make_report_standalone.py
