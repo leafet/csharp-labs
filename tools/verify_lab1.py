@@ -1,0 +1,81 @@
+"""Проверка меню лабораторной работы без внешних тестовых пакетов.
+
+Сначала собрать проект: dotnet build CSharpLabs.sln
+Затем выполнить: python tools/verify_lab1.py
+"""
+
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path(__file__).resolve().parents[1]
+APP = ROOT / "CSharpLabs" / "bin" / "Debug" / "net8.0" / "CSharpLabs.dll"
+
+
+def run(*lines: str) -> str:
+    result = subprocess.run(
+        ["dotnet", str(APP)],
+        input="\n".join(lines) + "\n",
+        text=True,
+        encoding="utf-8",
+        capture_output=True,
+        cwd=ROOT,
+        timeout=10,
+        check=True,
+    )
+    return result.stdout
+
+
+def check(label: str, inputs: tuple[str, ...], expected: str) -> None:
+    output = run(*inputs, "0")
+    if label == "2.2":
+        output = output.replace("3.5", "3,5")
+    assert expected in output, f"{label}: нет {expected!r}\n{output}"
+    print(f"OK {label}")
+
+
+def main() -> None:
+    if not APP.exists():
+        raise SystemExit("Сначала соберите проект: dotnet build CSharpLabs.sln")
+
+    cases = [
+        ("1.2", ("1", "4568"), "Введите число x: 14"),
+        ("1.4", ("2", "0"), "Введите число x: False"),
+        ("1.6", ("3", "D"), "Введите символ: True"),
+        ("1.8", ("4", "3", "6"), "Введите число b: True"),
+        ("1.10", ("5", "5", "11", "123", "14", "1"), "Итого 4"),
+        ("2.2", ("6", "7", "2"), "Введите делитель y: 3,5"),
+        ("2.4", ("7", "5", "7"), "5 < 7"),
+        ("2.6", ("8", "5", "7", "2"), "Введите число z: True"),
+        ("2.8", ("9", "21"), "Введите возраст x: 21 год"),
+        ("2.10", ("10", "четверг"), "четверг\nпятница\nсуббота\nвоскресенье"),
+        ("3.2", ("11", "5"), "5 4 3 2 1 0"),
+        ("3.4", ("12", "2", "5"), "Введите показатель y: 32"),
+        ("3.6", ("13", "1111"), "Введите число x: True"),
+        ("3.8", ("14", "4"), "*\n**\n***\n****"),
+        ("4.2", ("16", "1 2 3 4 2 2 5", "2"), "Индекс последнего вхождения: 5"),
+        ("4.4", ("17", "1 2 3 4 5", "9", "3"), "[1, 2, 3, 9, 4, 5]"),
+        ("4.6", ("18", "1 2 3 4 5"), "[5, 4, 3, 2, 1]"),
+        ("4.8", ("19", "1 2 3", "7 8 9"), "[1, 2, 3, 7, 8, 9]"),
+        ("4.10", ("20", "1 2 -3 4 -2 2 -5"), "[1, 2, 4, 2]"),
+    ]
+    for label, inputs, expected in cases:
+        check(label, inputs, expected)
+
+    check("делитель на границе int", ("4", "-2147483648", "-1"), "Введите число b: True")
+    check("сумма без переполнения", ("8", "2147483647", "1", "-2147483648"), "Введите число z: False")
+    check("минимальное int", ("13", "-2147483648"), "Введите число x: False")
+    check("конец потока", ("15", "-1"), "Ввод завершён.")
+    check("проверка символа", ("3", "XY", "D"), "Ошибка ввода: ожидался символ")
+    check("проверка массива", ("20", "1 x", "1 -2 3"), "[1, 3]")
+
+    game = run("15", *map(str, range(10)))
+    assert "Вы угадали!" in game, game
+    found = re.search(r"Вы отгадали число за (\d+) попыт(?:ку|ки|ок|ка)", game)
+    assert found and 1 <= int(found.group(1)) <= 10, game
+    print(f"OK 3.10: победа за {found.group(1)} попыток при переборе 0–9")
+    print(f"Пройдено {len(cases) + 7} проверок.")
+
+
+if __name__ == "__main__":
+    main()
