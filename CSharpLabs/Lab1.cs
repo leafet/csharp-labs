@@ -2,7 +2,7 @@ namespace CSharpLabs;
 
 public class Lab1
 {
-    private readonly string[] Days =
+    private readonly string[] _days =
     {
         "понедельник", "вторник", "среда", "четверг", "пятница", "суббота", "воскресенье"
     };
@@ -37,16 +37,16 @@ public class Lab1
                               "20 - Удалить негатив.\n" +
                               "0 - Выход.\n");
 
-            int n = ReadInt("Введите номер задания: ");
+            int selection = ReadInt("Введите номер задания: ", 0, 20);
 
-            switch (n)
+            switch (selection)
             {
                 case 0:
                     return;
 
                 // Задание 1. Методы
                 case 1:
-                    Console.WriteLine(sumLastNums(ReadInt("Введите число x: ")));
+                    Console.WriteLine(sumLastNums(ReadTwoDigitInt("Введите число x: ")));
                     break;
                 case 2:
                     Console.WriteLine(isPositive(ReadInt("Введите число x: ")));
@@ -82,25 +82,40 @@ public class Lab1
                         ReadInt("Введите число z: ")));
                     break;
                 case 9:
-                    Console.WriteLine(age(ReadInt("Введите возраст x: ")));
+                    Console.WriteLine(age(ReadInt("Введите возраст x: ", 0, int.MaxValue)));
                     break;
                 case 10:
                     Console.Write("Введите название дня недели: ");
-                    printDays(Console.ReadLine() ?? "");
+                    printDays(Console.ReadLine() ?? throw new EndOfStreamException());
                     break;
 
                 // Задание 3. Циклы
                 case 11:
-                    Console.WriteLine(reverseListNums(ReadInt("Введите число x: ")));
+                    Console.WriteLine(reverseListNums(ReadInt("Введите число x: ", 0, 1000)));
                     break;
                 case 12:
-                    Console.WriteLine(pow(ReadInt("Введите основание x: "), ReadInt("Введите показатель y: ")));
+                    while (true)
+                    {
+                        int number = ReadInt("Введите основание x: ");
+                        int exponent = ReadInt("Введите показатель y: ", 0, 1000);
+
+                        try
+                        {
+                            Console.WriteLine(pow(number, exponent));
+                            break;
+                        }
+                        catch (OverflowException)
+                        {
+                            Console.WriteLine("Результат выходит за диапазон int. Введите другие значения.");
+                        }
+                    }
+
                     break;
                 case 13:
                     Console.WriteLine(equalNum(ReadInt("Введите число x: ")));
                     break;
                 case 14:
-                    leftTriangle(ReadInt("Введите высоту треугольника x: "));
+                    leftTriangle(ReadInt("Введите высоту треугольника x: ", 1, 50));
                     break;
                 case 15:
                     guessGame();
@@ -112,9 +127,10 @@ public class Lab1
                         ReadInt("Введите искомое число x: ")));
                     break;
                 case 17:
-                    Console.WriteLine(ArrayToString(add(ReadArray("Введите элементы массива через пробел: "),
-                        ReadInt("Введите вставляемое значение x: "),
-                        ReadInt("Введите позицию pos: "))));
+                    int[] source = ReadArray("Введите элементы массива через пробел: ");
+                    int inserted = ReadInt("Введите вставляемое значение x: ");
+                    int position = ReadInt("Введите позицию pos: ", 0, source.Length);
+                    Console.WriteLine(ArrayToString(add(source, inserted, position)));
                     break;
                 case 18:
                     int[] arr = ReadArray("Введите элементы массива через пробел: ");
@@ -237,7 +253,7 @@ public class Lab1
             return 0;
         }
 
-        return (double) x / y;
+        return (double)x / y;
     }
 
     /// <summary>
@@ -352,9 +368,9 @@ public class Lab1
                 return;
         }
 
-        for (int i = start; i < Days.Length; i++)
+        for (int i = start; i < _days.Length; i++)
         {
-            Console.WriteLine(Days[i]);
+            Console.WriteLine(_days[i]);
         }
     }
 
@@ -395,11 +411,16 @@ public class Lab1
     /// <example>Пример: x=2, y=5, результат: 32</example>
     public int pow(int x, int y)
     {
+        if (y < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(y));
+        }
+
         int result = 1;
 
         for (int i = 0; i < y; i++)
         {
-            result *= x;
+            result = checked(result * x);
         }
 
         return result;
@@ -473,11 +494,11 @@ public class Lab1
 
             if (attempts == 0)
             {
-                answer = ReadInt("Введите число от 0 до 9: ");
+                answer = ReadInt("Введите число от 0 до 9: ", 0, 9);
             }
             else
             {
-                answer = ReadInt("Вы не угадали, введите число от 0 до 9: ");
+                answer = ReadInt("Вы не угадали, введите число от 0 до 9: ", 0, 9);
             }
 
             attempts++;
@@ -539,19 +560,14 @@ public class Lab1
     /// </summary>
     /// <param name="arr">Исходный массив.</param>
     /// <param name="x">Вставляемое значение.</param>
-    /// <param name="pos">Позиция вставки (значения вне диапазона ограничиваются границами массива).</param>
+    /// <param name="pos">Позиция вставки от 0 до длины массива включительно.</param>
     /// <returns>Новый массив длиной arr.Length + 1 со вставленным значением.</returns>
     /// <example>Пример: arr=[1,2,3,4,5], x=9, pos=3, результат: [1,2,3,9,4,5]</example>
     public int[] add(int[] arr, int x, int pos)
     {
-        if (pos < 0)
+        if (pos < 0 || pos > arr.Length)
         {
-            pos = 0;
-        }
-
-        if (pos > arr.Length)
-        {
-            pos = arr.Length;
+            throw new ArgumentOutOfRangeException(nameof(pos));
         }
 
         int[] result = new int[arr.Length + 1];
@@ -675,8 +691,10 @@ public class Lab1
     /// Проверка ввода целого числа: при некорректном вводе просит повторить.
     /// </summary>
     /// <param name="prompt">Текст приглашения ко вводу.</param>
+    /// <param name="min">Минимальное допустимое значение.</param>
+    /// <param name="max">Максимальное допустимое значение.</param>
     /// <returns>Введённое целое число.</returns>
-    private int ReadInt(string prompt)
+    private int ReadInt(string prompt, int min = int.MinValue, int max = int.MaxValue)
     {
         while (true)
         {
@@ -690,10 +708,33 @@ public class Lab1
 
             if (int.TryParse(line, out int value))
             {
-                return value;
+                if (value >= min && value <= max)
+                {
+                    return value;
+                }
+
+                Console.WriteLine($"Ошибка ввода: допустимый диапазон от {min} до {max}.");
+                continue;
             }
 
             Console.WriteLine("Ошибка ввода: ожидалось целое число, попробуйте ещё раз.");
+        }
+    }
+
+    /// <summary>
+    /// Читает целое число, имеющее не менее двух цифр без учёта знака.
+    /// </summary>
+    private int ReadTwoDigitInt(string prompt)
+    {
+        while (true)
+        {
+            int value = ReadInt(prompt);
+            if (Math.Abs((long)value) >= 10)
+            {
+                return value;
+            }
+
+            Console.WriteLine("Ошибка ввода: число должно содержать не менее двух цифр.");
         }
     }
 

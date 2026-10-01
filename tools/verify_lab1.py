@@ -26,11 +26,12 @@ def run(*lines: str) -> str:
     return result.stdout
 
 
-def check(label: str, inputs: tuple[str, ...], expected: str) -> None:
+def check(label: str, inputs: tuple[str, ...], *expected: str) -> None:
     output = run(*inputs, "0")
     if label == "2.2":
         output = output.replace("3.5", "3,5")
-    assert expected in output, f"{label}: нет {expected!r}\n{output}"
+    for fragment in expected:
+        assert fragment in output, f"{label}: нет {fragment!r}\n{output}"
     print(f"OK {label}")
 
 
@@ -68,13 +69,22 @@ def main() -> None:
     check("конец потока", ("15", "-1"), "Ввод завершён.")
     check("проверка символа", ("3", "XY", "D"), "Ошибка ввода: ожидался символ")
     check("проверка массива", ("20", "1 x", "1 -2 3"), "[1, 3]")
+    check("диапазон меню", ("21", "0"), "допустимый диапазон от 0 до 20")
+    check("две цифры", ("1", "5", "4568"), "не менее двух цифр", "Введите число x: 14")
+    check("диапазон возраста", ("9", "-1", "21"), "допустимый диапазон от 0", "21 год")
+    check("диапазон списка", ("11", "-1", "5"), "допустимый диапазон от 0 до 1000", "5 4 3 2 1 0")
+    check("диапазон степени", ("12", "2", "-1", "5"), "допустимый диапазон от 0 до 1000", "Введите показатель y: 32")
+    check("переполнение степени", ("12", "2", "31", "2", "5"), "выходит за диапазон int", "Введите показатель y: 32")
+    check("диапазон треугольника", ("14", "0", "4"), "допустимый диапазон от 1 до 50", "*\n**\n***\n****")
+    check("диапазон вставки", ("17", "1 2 3", "9", "-1", "1"), "допустимый диапазон от 0 до 3", "[1, 9, 2, 3]")
 
-    game = run("15", *map(str, range(10)))
+    game = run("15", "10", *map(str, range(10)))
+    assert "допустимый диапазон от 0 до 9" in game, game
     assert "Вы угадали!" in game, game
     found = re.search(r"Вы отгадали число за (\d+) попыт(?:ку|ки|ок|ка)", game)
     assert found and 1 <= int(found.group(1)) <= 10, game
     print(f"OK 3.10: победа за {found.group(1)} попыток при переборе 0–9")
-    print(f"Пройдено {len(cases) + 7} проверок.")
+    print(f"Пройдено {len(cases) + 15} проверок.")
 
 
 if __name__ == "__main__":

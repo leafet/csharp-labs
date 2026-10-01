@@ -13,6 +13,7 @@ __pycache__/
 /screenshots/src/
 /screenshots/*.png
 /screenshots/live/z3_t5_*.png
+/screenshots/live/input_check.png
 /tools/check_cases.py
 /tools/make_live_screenshots.ps1
 /tools/make_report_docx.py
