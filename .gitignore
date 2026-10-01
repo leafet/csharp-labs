@@ -14,10 +14,3 @@ __pycache__/
 /screenshots/*.png
 /screenshots/live/z3_t5_*.png
 /screenshots/live/input_check.png
-/tools/check_cases.py
-/tools/make_live_screenshots.ps1
-/tools/make_report_docx.py
-/tools/make_screenshots.ps1
-/tools/report_testing_screenshots.py
-/tools/simplify_report.py
-/tools/Отчёт_ЛР1_до_упрощения.md
