@@ -14,7 +14,7 @@ public sealed partial class Lab2
             Console.WriteLine("5 — Кот мяукает (задание 5.2)");
             Console.WriteLine("0 — Назад");
 
-            int choice = ReadInt("Выберите задание: ", 0, 5);
+            int choice = ConsoleInput.ReadInt("Выберите задание: ", 0, 5);
 
             switch (choice)
             {
@@ -36,50 +36,6 @@ public sealed partial class Lab2
                     RunCat();
                     break;
             }
-        }
-    }
-
-    private static string ReadText(string prompt)
-    {
-        while (true)
-        {
-            string? value = ReadOptionalText(prompt);
-
-            if (value is not null)
-            {
-                return value;
-            }
-
-            Console.WriteLine("Значение не может быть пустым.");
-        }
-    }
-
-    private static string? ReadOptionalText(string prompt)
-    {
-        Console.Write(prompt);
-        string? value = Console.ReadLine();
-
-        if (value is null)
-        {
-            throw new EndOfStreamException();
-        }
-
-        value = value.Trim();
-        return value.Length == 0 ? null : value;
-    }
-
-    private static int ReadInt(string prompt, int minimum, int maximum)
-    {
-        while (true)
-        {
-            string? input = ReadOptionalText(prompt);
-
-            if (int.TryParse(input, out int result) && result >= minimum && result <= maximum)
-            {
-                return result;
-            }
-
-            Console.WriteLine($"Введите целое число от {minimum} до {maximum}.");
         }
     }
 }

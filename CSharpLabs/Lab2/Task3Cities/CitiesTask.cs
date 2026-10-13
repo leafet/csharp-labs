@@ -41,7 +41,7 @@ public sealed partial class Lab2
             destination = ReadCity(cities, "Город назначения (A-F): ");
         }
 
-        int cost = ReadInt("Стоимость поездки: ", 1, 1_000_000);
+        int cost = ConsoleInput.ReadInt("Стоимость поездки: ", 1, 1_000_000);
         source.AddRoute(destination, cost);
         Console.WriteLine("После добавления: " + source);
     }
@@ -50,7 +50,7 @@ public sealed partial class Lab2
     {
         while (true)
         {
-            string name = ReadText(prompt);
+            string name = ConsoleInput.ReadText(prompt);
 
             for (int i = 0; i < cities.Length; i++)
             {

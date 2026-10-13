@@ -7,15 +7,16 @@ CSharpLabs.sln
 CSharpLabs/
   CSharpLabs.csproj
   Program.cs
+  ConsoleInput.cs
   Lab1/
     Lab1.cs
   Lab2/
     Lab2.cs
-    Task1/  # имена
-    Task2/  # люди и родственные связи
-    Task3/  # города
-    Task4/  # конструкторы имён и людей
-    Task5/  # кот
+    Task1Names/         # имена
+    Task2People/        # люди и родственные связи
+    Task3Cities/        # города
+    Task4Constructors/  # конструкторы имён и людей
+    Task5Cat/           # кот
 labs/
   Lab1/
     lab1_csharp.pdf
@@ -32,7 +33,7 @@ labs/
 | № 1 | [CSharpLabs/Lab1](CSharpLabs/Lab1) | [Условие](labs/Lab1/lab1_csharp.pdf), [отчёт Markdown](labs/Lab1/Отчёт_ЛР1.md), [отчёт HTML](labs/Lab1/Отчёт_ЛР1.html) |
 | № 2, вариант 3 | [CSharpLabs/Lab2](CSharpLabs/Lab2) | [Условие](labs/Lab2/lab2_charp.pdf), [отчёт](labs/Lab2/Отчёт_ЛР2.md) |
 
-В ЛР2 папки `Task1`–`Task5` соответствуют пяти пунктам меню. Общие для нескольких заданий классы `PersonName` и `Person` находятся там, где впервые вводятся: в `Task1` и `Task2`. Задание `Task4` использует их конструкторы без дублирования классов.
+В ЛР2 папки `Task1Names`–`Task5Cat` соответствуют пяти пунктам меню. Общие для нескольких заданий классы `PersonName` и `Person` находятся там, где впервые вводятся: в `Task1Names` и `Task2People`. Задание `Task4Constructors` использует их конструкторы без дублирования классов. Статический класс `ConsoleInput` рядом с `Program` проверяет ввод для главного меню и ЛР2.
 
 ## Запуск
 

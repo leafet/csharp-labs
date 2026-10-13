@@ -15,19 +15,8 @@ public static class Program
                 Console.WriteLine("\n1 — Лабораторная работа №1");
                 Console.WriteLine("2 — Лабораторная работа №2, вариант 3");
                 Console.WriteLine("0 — Выход");
-                Console.Write("Выберите лабораторную работу: ");
 
-                string? input = Console.ReadLine();
-                if (input is null)
-                {
-                    throw new EndOfStreamException();
-                }
-
-                if (!int.TryParse(input, out int choice) || choice < 0 || choice > 2)
-                {
-                    Console.WriteLine("Введите 0, 1 или 2.");
-                    continue;
-                }
+                int choice = ConsoleInput.ReadInt("Выберите лабораторную работу: ", 0, 2);
 
                 switch (choice)
                 {
