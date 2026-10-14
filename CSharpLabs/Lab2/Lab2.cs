@@ -6,7 +6,8 @@ public sealed partial class Lab2
     {
         while (true)
         {
-            Console.WriteLine("\nЛабораторная работа №2 — вариант 3");
+            ConsoleInput.ClearScreen();
+            Console.WriteLine("Лабораторная работа №2 — вариант 3");
             Console.WriteLine("1 — Имена (задание 1.3)");
             Console.WriteLine("2 — Человек с именем и отцом (задания 2.2 и 2.3)");
             Console.WriteLine("3 — Города (задание 3.3)");
@@ -36,6 +37,8 @@ public sealed partial class Lab2
                     RunCat();
                     break;
             }
+
+            ConsoleInput.WaitForContinue();
         }
     }
 }

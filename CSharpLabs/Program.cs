@@ -12,7 +12,8 @@ public static class Program
         {
             while (true)
             {
-                Console.WriteLine("\n1 — Лабораторная работа №1");
+                ConsoleInput.ClearScreen();
+                Console.WriteLine("1 — Лабораторная работа №1");
                 Console.WriteLine("2 — Лабораторная работа №2, вариант 3");
                 Console.WriteLine("0 — Выход");
 

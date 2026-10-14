@@ -15,6 +15,7 @@ public class Lab1
     {
         while (true)
         {
+            ConsoleInput.ClearScreen();
             Console.WriteLine("1 - Сумма знаков. Сумма двух последних цифр числа.\n" +
                               "2 - Есть ли позитив. Проверяет, положительное ли число.\n" +
                               "3 - Большая буква. Проверяет, заглавная ли это латинская буква.\n" +
@@ -150,7 +151,7 @@ public class Lab1
                     break;
             }
 
-            Console.WriteLine();
+            ConsoleInput.WaitForContinue();
         }
     }
 

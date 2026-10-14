@@ -2,6 +2,45 @@ namespace CSharpLabs;
 
 internal static class ConsoleInput
 {
+    public static void ClearScreen()
+    {
+        if (Console.IsOutputRedirected)
+        {
+            Console.WriteLine();
+            return;
+        }
+
+        try
+        {
+            Console.SetCursorPosition(0, 0);
+            Console.Write("\u001b[2J");
+            Console.SetCursorPosition(0, 0);
+        }
+        catch (IOException)
+        {
+            // Некоторые терминалы не поддерживают управление положением курсора.
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            // Размер терминала мог измениться во время очистки.
+        }
+    }
+
+    public static void WaitForContinue()
+    {
+        if (Console.IsInputRedirected || Console.IsOutputRedirected)
+        {
+            return;
+        }
+
+        Console.Write("\nНажмите Enter, чтобы вернуться в меню...");
+
+        if (Console.ReadLine() is null)
+        {
+            throw new EndOfStreamException();
+        }
+    }
+
     public static int ReadInt(string prompt, int minimum, int maximum)
     {
         while (true)
