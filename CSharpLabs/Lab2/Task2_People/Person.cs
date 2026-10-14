@@ -43,6 +43,11 @@ public sealed class Person
         }
         set
         {
+            if (ReferenceEquals(this, value))
+            {
+                throw new ArgumentException("Человек не может быть собственным отцом.", nameof(value));
+            }
+
             _father = value;
         }
     }
