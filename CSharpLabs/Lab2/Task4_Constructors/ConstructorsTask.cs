@@ -6,10 +6,10 @@ public sealed partial class Lab2
     {
         Console.WriteLine("Имена из задания 4.5:");
 
-        PersonName cleopatra = new PersonName("Клеопатра");
-        PersonName pushkin = new PersonName("Александр", "Пушкин", "Сергеевич");
-        PersonName mayakovsky = new PersonName("Владимир", "Маяковский");
-        PersonName christopher = new PersonName("Христофор", "Бонифатьевич");
+        PersonFullName cleopatra = new PersonFullName("Клеопатра");
+        PersonFullName pushkin = new PersonFullName("Александр", "Пушкин", "Сергеевич");
+        PersonFullName mayakovsky = new PersonFullName("Владимир", "Маяковский");
+        PersonFullName christopher = new PersonFullName("Христофор", "Бонифатьевич");
 
         Console.WriteLine(cleopatra);
         Console.WriteLine(pushkin);
@@ -19,7 +19,7 @@ public sealed partial class Lab2
         Console.WriteLine("Люди из задания 4.6:");
 
         Person lev = new Person("Лев", 170);
-        Person sergey = new Person(new PersonName("Сергей", "Пушкин"), 168, lev);
+        Person sergey = new Person(new PersonFullName("Сергей", "Пушкин"), 168, lev);
         Person alexander = new Person("Александр", 167, sergey);
 
         Console.WriteLine(lev);

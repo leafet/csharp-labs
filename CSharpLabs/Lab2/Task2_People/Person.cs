@@ -2,11 +2,11 @@ namespace CSharpLabs;
 
 public sealed class Person
 {
-    private PersonName _name;
+    private PersonFullName _name;
     private int _height;
     private Person? _father;
 
-    public PersonName Name
+    public PersonFullName Name
     {
         get
         {
@@ -59,20 +59,20 @@ public sealed class Person
         }
     }
 
-    public Person(string givenName, int height) : this(new PersonName(givenName), height, null)
+    public Person(string givenName, int height) : this(new PersonFullName(givenName), height, null)
     {
     }
 
     public Person(string givenName, int height, Person father)
-        : this(new PersonName(givenName), height, father)
+        : this(new PersonFullName(givenName), height, father)
     {
     }
 
-    public Person(PersonName name, int height) : this(name, height, null)
+    public Person(PersonFullName name, int height) : this(name, height, null)
     {
     }
 
-    public Person(PersonName name, int height, Person? father)
+    public Person(PersonFullName name, int height, Person? father)
     {
         _name = name ?? throw new ArgumentNullException(nameof(name));
         Height = height;

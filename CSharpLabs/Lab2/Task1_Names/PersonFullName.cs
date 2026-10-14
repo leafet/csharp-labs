@@ -1,6 +1,6 @@
 namespace CSharpLabs;
 
-public sealed class PersonName
+public sealed class PersonFullName
 {
     private string _givenName;
     private string? _familyName;
@@ -42,15 +42,15 @@ public sealed class PersonName
         }
     }
 
-    public PersonName(string givenName) : this(givenName, null, null)
+    public PersonFullName(string givenName) : this(givenName, null, null)
     {
     }
 
-    public PersonName(string givenName, string? familyName) : this(givenName, familyName, null)
+    public PersonFullName(string givenName, string? familyName) : this(givenName, familyName, null)
     {
     }
 
-    public PersonName(string givenName, string? familyName, string? patronymic)
+    public PersonFullName(string givenName, string? familyName, string? patronymic)
     {
         _givenName = RequireText(givenName, nameof(givenName));
         _familyName = OptionalText(familyName);
