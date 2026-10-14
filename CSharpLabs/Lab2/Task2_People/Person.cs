@@ -93,8 +93,6 @@ public sealed class Person
             return;
         }
 
-        _father.CompleteNameFromFather();
-
         if (_fullName.FamilyName is null)
         {
             _fullName.FamilyName = _father.FullName.FamilyName;
