@@ -1,6 +1,6 @@
 namespace CSharpLabs;
 
-public sealed partial class Lab2
+public partial class Lab2
 {
     public void Run()
     {

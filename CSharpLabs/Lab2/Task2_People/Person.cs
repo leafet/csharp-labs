@@ -1,6 +1,6 @@
 namespace CSharpLabs;
 
-public sealed class Person
+public class Person
 {
     private PersonFullName _fullName;
     private int _height;

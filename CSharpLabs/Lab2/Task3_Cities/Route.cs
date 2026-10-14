@@ -1,6 +1,6 @@
 namespace CSharpLabs;
 
-public sealed class Route
+public class Route
 {
     private City _destination;
     private int _cost;

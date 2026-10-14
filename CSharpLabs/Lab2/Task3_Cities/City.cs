@@ -2,7 +2,7 @@ using System.Text;
 
 namespace CSharpLabs;
 
-public sealed class City
+public class City
 {
     private string _name = string.Empty;
     private readonly List<Route> _routes;

@@ -2,7 +2,7 @@ using System.Text;
 
 namespace CSharpLabs;
 
-public sealed class Cat
+public class Cat
 {
     private string _name = string.Empty;
 
