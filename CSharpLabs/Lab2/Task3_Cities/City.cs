@@ -9,19 +9,29 @@ public sealed class City
 
     public string Name
     {
-        get { return _name; }
+        get
+        {
+            return _name;
+        }
         set
         {
             string? name = value?.Trim();
-            _name = string.IsNullOrEmpty(name)
-                ? throw new ArgumentException("Название города не может быть пустым.", nameof(value))
-                : name;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Название города не может быть пустым.", nameof(value));
+            }
+
+            _name = name;
         }
     }
 
     public IReadOnlyList<Route> Routes
     {
-        get { return _routes.AsReadOnly(); }
+        get
+        {
+            return _routes.AsReadOnly();
+        }
     }
 
     public City(string name)
@@ -56,6 +66,7 @@ public sealed class City
     public override string ToString()
     {
         StringBuilder result = new StringBuilder(_name);
+
         result.Append(" [");
 
         for (int i = 0; i < _routes.Count; i++)
@@ -69,43 +80,7 @@ public sealed class City
         }
 
         result.Append(']');
+
         return result.ToString();
-    }
-}
-
-public sealed class Route
-{
-    private City _destination;
-    private int _cost;
-
-    public City Destination
-    {
-        get { return _destination; }
-        set { _destination = value ?? throw new ArgumentNullException(nameof(value)); }
-    }
-
-    public int Cost
-    {
-        get { return _cost; }
-        set
-        {
-            if (value <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), "Стоимость должна быть положительной.");
-            }
-
-            _cost = value;
-        }
-    }
-
-    public Route(City destination, int cost)
-    {
-        _destination = destination ?? throw new ArgumentNullException(nameof(destination));
-        Cost = cost;
-    }
-
-    public override string ToString()
-    {
-        return $"{_destination.Name}:{_cost}";
     }
 }

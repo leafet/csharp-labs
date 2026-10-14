@@ -8,20 +8,38 @@ public sealed class PersonName
 
     public string GivenName
     {
-        get { return _givenName; }
-        set { _givenName = RequireText(value, nameof(GivenName)); }
+        get
+        {
+            return _givenName;
+        }
+        set
+        {
+            _givenName = RequireText(value, nameof(GivenName));
+        }
     }
 
     public string? FamilyName
     {
-        get { return _familyName; }
-        set { _familyName = OptionalText(value); }
+        get
+        {
+            return _familyName;
+        }
+        set
+        {
+            _familyName = OptionalText(value);
+        }
     }
 
     public string? Patronymic
     {
-        get { return _patronymic; }
-        set { _patronymic = OptionalText(value); }
+        get
+        {
+            return _patronymic;
+        }
+        set
+        {
+            _patronymic = OptionalText(value);
+        }
     }
 
     public PersonName(string givenName) : this(givenName, null, null)

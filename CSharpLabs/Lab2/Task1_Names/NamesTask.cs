@@ -16,14 +16,20 @@ public sealed partial class Lab2
     private static void RunCustomNames()
     {
         Console.WriteLine("Введите три собственных имени.");
-        PersonName firstName = new PersonName(ConsoleInput.ReadText("Личное имя первого человека: "));
+
+        string firstGivenName = ConsoleInput.ReadText("Личное имя первого человека: ");
+
+        string secondGivenName = ConsoleInput.ReadText("Личное имя второго человека: ");
+        string secondFamilyName = ConsoleInput.ReadText("Фамилия второго человека: ");
+        string secondPatronymic = ConsoleInput.ReadText("Отчество второго человека: ");
+
+        string thirdGivenName = ConsoleInput.ReadText("Личное имя третьего человека: ");
+        string thirdFamilyName = ConsoleInput.ReadText("Фамилия третьего человека: ");
+
+        PersonName firstName = new PersonName(firstGivenName);
         PersonName secondName = new PersonName(
-            ConsoleInput.ReadText("Личное имя второго человека: "),
-            ConsoleInput.ReadText("Фамилия второго человека: "),
-            ConsoleInput.ReadText("Отчество второго человека: "));
-        PersonName thirdName = new PersonName(
-            ConsoleInput.ReadText("Личное имя третьего человека: "),
-            ConsoleInput.ReadText("Фамилия третьего человека: "));
+            secondGivenName, secondFamilyName, secondPatronymic);
+        PersonName thirdName = new PersonName(thirdGivenName, thirdFamilyName);
 
         Console.WriteLine(firstName);
         Console.WriteLine(secondName);

@@ -8,13 +8,20 @@ public sealed class Cat
 
     public string Name
     {
-        get { return _name; }
+        get
+        {
+            return _name;
+        }
         set
         {
             string? name = value?.Trim();
-            _name = string.IsNullOrEmpty(name)
-                ? throw new ArgumentException("Имя кота не может быть пустым.", nameof(value))
-                : name;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Имя кота не может быть пустым.", nameof(value));
+            }
+
+            _name = name;
         }
     }
 
@@ -47,7 +54,9 @@ public sealed class Cat
             sound.Append("мяу");
         }
 
-        Console.WriteLine(sound.Append('!'));
+        sound.Append('!');
+
+        Console.WriteLine(sound);
     }
 
     public override string ToString()

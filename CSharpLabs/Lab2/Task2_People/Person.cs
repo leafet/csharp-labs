@@ -8,13 +8,22 @@ public sealed class Person
 
     public PersonName Name
     {
-        get { return _name; }
-        set { _name = value ?? throw new ArgumentNullException(nameof(value)); }
+        get
+        {
+            return _name;
+        }
+        set
+        {
+            _name = value ?? throw new ArgumentNullException(nameof(value));
+        }
     }
 
     public int Height
     {
-        get { return _height; }
+        get
+        {
+            return _height;
+        }
         set
         {
             if (value <= 0)
@@ -28,7 +37,10 @@ public sealed class Person
 
     public Person? Father
     {
-        get { return _father; }
+        get
+        {
+            return _father;
+        }
         set
         {
             Person? ancestor = value;
@@ -69,23 +81,29 @@ public sealed class Person
 
     public override string ToString()
     {
-        if (_father is not null)
-        {
-            // Сначала обновляем имя отца: фамилия может прийти от дедушки.
-            _father.ToString();
-
-            if (_name.FamilyName is null)
-            {
-                _name.FamilyName = _father.Name.FamilyName;
-            }
-
-            if (_name.Patronymic is null)
-            {
-                _name.Patronymic = MakePatronymic(_father.Name.GivenName);
-            }
-        }
+        CompleteNameFromFather();
 
         return $"{_name}, рост: {_height}";
+    }
+
+    private void CompleteNameFromFather()
+    {
+        if (_father is null)
+        {
+            return;
+        }
+
+        _father.CompleteNameFromFather();
+
+        if (_name.FamilyName is null)
+        {
+            _name.FamilyName = _father.Name.FamilyName;
+        }
+
+        if (_name.Patronymic is null)
+        {
+            _name.Patronymic = MakePatronymic(_father.Name.GivenName);
+        }
     }
 
     private static string MakePatronymic(string givenName)

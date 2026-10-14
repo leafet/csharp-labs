@@ -4,7 +4,7 @@ namespace CSharpLabs;
 public static class Program
 {
     /// <summary>
-    /// Создаёт экземпляр класса с задачами лабораторной работы и запускает меню.
+    /// Показывает общее меню и запускает выбранную лабораторную работу.
     /// </summary>
     public static void Main()
     {

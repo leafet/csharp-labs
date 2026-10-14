@@ -26,12 +26,16 @@ public sealed partial class Lab2
         // Ориентированные пути с рисунка 2; обратный путь добавляется отдельно.
         a.AddRoute(b, 5);
         a.AddRoute(f, 1);
+
         b.AddRoute(a, 5);
+
         c.AddRoute(b, 3);
         c.AddRoute(d, 4);
+
         d.AddRoute(a, 6);
         d.AddRoute(c, 4);
         d.AddRoute(e, 2);
+
         f.AddRoute(b, 1);
         f.AddRoute(e, 2);
 
@@ -41,7 +45,9 @@ public sealed partial class Lab2
     private static void RunCustomCities()
     {
         City[] cities = CreateCities();
+
         Console.WriteLine("Добавьте свой путь к схеме.");
+
         City source = ReadCity(cities, "Город отправления (A-F): ");
         City destination = ReadCity(cities, "Город назначения (A-F): ");
 
@@ -52,7 +58,9 @@ public sealed partial class Lab2
         }
 
         int cost = ConsoleInput.ReadInt("Стоимость поездки: ", 1, 1_000_000);
+
         source.AddRoute(destination, cost);
+
         Console.WriteLine("После добавления: " + source);
     }
 
