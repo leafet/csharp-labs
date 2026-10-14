@@ -4,6 +4,18 @@ public sealed partial class Lab2
 {
     private static void RunCities()
     {
+        City[] cities = CreateCities();
+
+        Console.WriteLine("Схема городов из задания:");
+
+        for (int i = 0; i < cities.Length; i++)
+        {
+            Console.WriteLine(cities[i]);
+        }
+    }
+
+    private static City[] CreateCities()
+    {
         City a = new City("A");
         City b = new City("B");
         City c = new City("C");
@@ -23,14 +35,12 @@ public sealed partial class Lab2
         f.AddRoute(b, 1);
         f.AddRoute(e, 2);
 
-        Console.WriteLine("Схема городов из задания:");
-        City[] cities = { a, b, c, d, e, f };
+        return new[] { a, b, c, d, e, f };
+    }
 
-        for (int i = 0; i < cities.Length; i++)
-        {
-            Console.WriteLine(cities[i]);
-        }
-
+    private static void RunCustomCities()
+    {
+        City[] cities = CreateCities();
         Console.WriteLine("Добавьте свой путь к схеме.");
         City source = ReadCity(cities, "Город отправления (A-F): ");
         City destination = ReadCity(cities, "Город назначения (A-F): ");
