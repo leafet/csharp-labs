@@ -26,8 +26,10 @@ public partial class Lab2
         // Ориентированные пути с рисунка 2; обратный путь добавляется отдельно.
         a.AddRoute(b, 5);
         a.AddRoute(f, 1);
+        a.AddRoute(d, 6);
 
         b.AddRoute(a, 5);
+        b.AddRoute(c, 3);
 
         c.AddRoute(b, 3);
         c.AddRoute(d, 4);
