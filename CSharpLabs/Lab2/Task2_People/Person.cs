@@ -43,18 +43,6 @@ public sealed class Person
         }
         set
         {
-            Person? ancestor = value;
-
-            while (ancestor is not null)
-            {
-                if (ReferenceEquals(this, ancestor))
-                {
-                    throw new ArgumentException("Родственные связи не могут образовывать цикл.", nameof(value));
-                }
-
-                ancestor = ancestor.Father;
-            }
-
             _father = value;
         }
     }
