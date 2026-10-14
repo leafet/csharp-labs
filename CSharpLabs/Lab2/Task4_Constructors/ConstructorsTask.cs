@@ -26,17 +26,4 @@ public sealed partial class Lab2
         Console.WriteLine(sergey);
         Console.WriteLine(alexander);
     }
-
-    private static void RunCustomConstructors()
-    {
-        Console.WriteLine("Создайте своего человека через конструктор с именем-строкой и отцом.");
-
-        string givenName = ConsoleInput.ReadText("Личное имя: ");
-        int height = ConsoleInput.ReadInt("Рост: ", 1, 300);
-
-        Person father = new Person(new PersonName("Александр", "Пушкин", "Сергеевич"), 167);
-        Person child = new Person(givenName, height, father);
-
-        Console.WriteLine(child);
-    }
 }
