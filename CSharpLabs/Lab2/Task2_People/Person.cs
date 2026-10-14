@@ -2,19 +2,19 @@ namespace CSharpLabs;
 
 public sealed class Person
 {
-    private PersonFullName _name;
+    private PersonFullName _fullName;
     private int _height;
     private Person? _father;
 
-    public PersonFullName Name
+    public PersonFullName FullName
     {
         get
         {
-            return _name;
+            return _fullName;
         }
         set
         {
-            _name = value ?? throw new ArgumentNullException(nameof(value));
+            _fullName = value ?? throw new ArgumentNullException(nameof(value));
         }
     }
 
@@ -68,13 +68,13 @@ public sealed class Person
     {
     }
 
-    public Person(PersonFullName name, int height) : this(name, height, null)
+    public Person(PersonFullName fullName, int height) : this(fullName, height, null)
     {
     }
 
-    public Person(PersonFullName name, int height, Person? father)
+    public Person(PersonFullName fullName, int height, Person? father)
     {
-        _name = name ?? throw new ArgumentNullException(nameof(name));
+        _fullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
         Height = height;
         Father = father;
     }
@@ -83,7 +83,7 @@ public sealed class Person
     {
         CompleteNameFromFather();
 
-        return $"{_name}, рост: {_height}";
+        return $"{_fullName}, рост: {_height}";
     }
 
     private void CompleteNameFromFather()
@@ -95,14 +95,14 @@ public sealed class Person
 
         _father.CompleteNameFromFather();
 
-        if (_name.FamilyName is null)
+        if (_fullName.FamilyName is null)
         {
-            _name.FamilyName = _father.Name.FamilyName;
+            _fullName.FamilyName = _father.FullName.FamilyName;
         }
 
-        if (_name.Patronymic is null)
+        if (_fullName.Patronymic is null)
         {
-            _name.Patronymic = MakePatronymic(_father.Name.GivenName);
+            _fullName.Patronymic = MakePatronymic(_father.FullName.GivenName);
         }
     }
 
