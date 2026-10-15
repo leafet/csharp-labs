@@ -11,6 +11,7 @@ public class PersonFullName
         _name = OptionalText(name);
         _secondName = OptionalText(secondName);
         _patronymic = OptionalText(patronymic);
+        ValidateParts(_name, _secondName, _patronymic);
     }
 
     public PersonFullName(string? name, string? secondName) : this(name, secondName, null)
@@ -29,7 +30,10 @@ public class PersonFullName
         }
         set
         {
-            _name = OptionalText(value);
+            string? text = OptionalText(value);
+            ValidateParts(text, _secondName, _patronymic);
+
+            _name = text;
         }
     }
 
@@ -41,7 +45,10 @@ public class PersonFullName
         }
         set
         {
-            _secondName = OptionalText(value);
+            string? text = OptionalText(value);
+            ValidateParts(_name, text, _patronymic);
+
+            _secondName = text;
         }
     }
 
@@ -53,7 +60,10 @@ public class PersonFullName
         }
         set
         {
-            _patronymic = OptionalText(value);
+            string? text = OptionalText(value);
+            ValidateParts(_name, _secondName, text);
+
+            _patronymic = text;
         }
     }
 
@@ -72,6 +82,14 @@ public class PersonFullName
         }
 
         return result;
+    }
+
+    private static void ValidateParts(string? name, string? secondName, string? patronymic)
+    {
+        if (name is null && secondName is null && patronymic is null)
+        {
+            throw new ArgumentException("Должна быть задана хотя бы одна часть ФИО.");
+        }
     }
 
     private static string? OptionalText(string? value)

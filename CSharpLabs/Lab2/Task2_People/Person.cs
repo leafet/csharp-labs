@@ -13,6 +13,7 @@ public class Person
         _fullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
         Height = height;
         Father = father;
+        CompleteNameFromFather();
     }
 
     public Person(string? name, int height, Person father)

@@ -9,21 +9,30 @@ internal static class ObjectInput
 {
     public static PersonFullName ReadFullName()
     {
-        string? name = ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): ");
-        string? secondName = ConsoleInput.ReadOptionalText("Фамилия (Enter — пропустить): ");
-        string? patronymic = ConsoleInput.ReadOptionalText("Отчество (Enter — пропустить): ");
-
-        if (patronymic is not null)
+        while (true)
         {
-            return new PersonFullName(name, secondName, patronymic);
-        }
+            string? name = ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): ");
+            string? secondName = ConsoleInput.ReadOptionalText("Фамилия (Enter — пропустить): ");
+            string? patronymic = ConsoleInput.ReadOptionalText("Отчество (Enter — пропустить): ");
 
-        if (secondName is not null)
-        {
-            return new PersonFullName(name, secondName);
-        }
+            if (name is null && secondName is null && patronymic is null)
+            {
+                Console.WriteLine("Должна быть задана хотя бы одна часть ФИО. Повторите ввод.");
+                continue;
+            }
 
-        return new PersonFullName(name);
+            if (patronymic is not null)
+            {
+                return new PersonFullName(name, secondName, patronymic);
+            }
+
+            if (secondName is not null)
+            {
+                return new PersonFullName(name, secondName);
+            }
+
+            return new PersonFullName(name);
+        }
     }
 
     public static Person ReadPerson()
@@ -34,7 +43,7 @@ internal static class ObjectInput
 
         if (nameType == 1)
         {
-            fullName = new PersonFullName(ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): "));
+            fullName = new PersonFullName(ConsoleInput.ReadRequiredText("Имя: "));
         }
         else
         {

@@ -795,6 +795,13 @@ public class Lab1
             }
 
             string[] parts = line.Replace(",", " ").Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length == 0)
+            {
+                Console.WriteLine("Ошибка ввода: массив пуст, попробуйте ещё раз.");
+                continue;
+            }
+
             int[] arr = new int[parts.Length];
             bool correct = true;
 

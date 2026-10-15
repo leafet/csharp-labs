@@ -2,7 +2,7 @@ namespace CSharpLabs.Lab2.Task3_Cities;
 
 public class Route
 {
-    private City _destination;
+    private readonly City _destination;
     private int _cost;
 
     public Route(City destination, int cost)
@@ -16,10 +16,6 @@ public class Route
         get
         {
             return _destination;
-        }
-        set
-        {
-            _destination = value ?? throw new ArgumentNullException(nameof(value));
         }
     }
 
