@@ -121,6 +121,8 @@ public class Lab2
         d.AddRoute(c, 4);
         d.AddRoute(e, 2);
 
+        e.AddRoute(f, 2);
+
         f.AddRoute(b, 1);
         f.AddRoute(e, 2);
 
