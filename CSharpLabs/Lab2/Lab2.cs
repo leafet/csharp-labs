@@ -13,9 +13,10 @@ public partial class Lab2
             Console.WriteLine("3 — Города (задание 3.3)");
             Console.WriteLine("4 — Конструкторы имени и человека (задания 4.5 и 4.6)");
             Console.WriteLine("5 — Кот мяукает (задание 5.2)");
+            Console.WriteLine("6 — Ручной ввод объектов");
             Console.WriteLine("0 — Назад");
 
-            int choice = ConsoleInput.ReadInt("Выберите задание: ", 0, 5);
+            int choice = ConsoleInput.ReadInt("Выберите задание: ", 0, 6);
 
             switch (choice)
             {
@@ -36,6 +37,9 @@ public partial class Lab2
                 case 5:
                     RunCat();
                     break;
+                case 6:
+                    RunManualInput();
+                    continue;
             }
 
             ConsoleInput.WaitForContinue();

@@ -60,4 +60,34 @@ internal static class ConsoleInput
             Console.WriteLine($"Введите целое число от {minimum} до {maximum}.");
         }
     }
+
+    public static string ReadRequiredText(string prompt)
+    {
+        while (true)
+        {
+            string? text = ReadOptionalText(prompt);
+
+            if (text is not null)
+            {
+                return text;
+            }
+
+            Console.WriteLine("Значение не может быть пустым.");
+        }
+    }
+
+    public static string? ReadOptionalText(string prompt)
+    {
+        Console.Write(prompt);
+        string? input = Console.ReadLine();
+
+        if (input is null)
+        {
+            throw new EndOfStreamException();
+        }
+
+        string text = input.Trim();
+
+        return text.Length == 0 ? null : text;
+    }
 }
