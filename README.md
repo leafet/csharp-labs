@@ -26,12 +26,15 @@ labs/
   Lab2/
     lab2_charp.pdf
     Отчёт_ЛР2.md
+    Отчёт_ЛР2.html
+    screenshots/
+    tools/
 ```
 
 | Работа | Код | Материалы |
 | --- | --- | --- |
 | № 1 | [CSharpLabs/Lab1](CSharpLabs/Lab1) | [Условие](labs/Lab1/lab1_csharp.pdf), [отчёт Markdown](labs/Lab1/Отчёт_ЛР1.md), [отчёт HTML](labs/Lab1/Отчёт_ЛР1.html) |
-| № 2, вариант 3 | [CSharpLabs/Lab2](CSharpLabs/Lab2) | [Условие](labs/Lab2/lab2_charp.pdf), [отчёт](labs/Lab2/Отчёт_ЛР2.md) |
+| № 2, вариант 3 | [CSharpLabs/Lab2](CSharpLabs/Lab2) | [Условие](labs/Lab2/lab2_charp.pdf), [отчёт Markdown](labs/Lab2/Отчёт_ЛР2.md), [отчёт HTML](labs/Lab2/Отчёт_ЛР2.html), [снимки проверок](labs/Lab2/screenshots/README.md) |
 
 В ЛР2 папки `Task1_Names`–`Task5_Cat` соответствуют пяти пунктам меню. Общие для нескольких заданий классы `PersonFullName` и `Person` находятся там, где впервые вводятся: в `Task1_Names` и `Task2_People`. Задание `Task4_Constructors` использует их конструкторы без дублирования классов. Статический класс `ConsoleInput` рядом с `Program` проверяет ввод для главного меню и ЛР2.
 

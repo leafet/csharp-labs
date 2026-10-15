@@ -1,0 +1,2 @@
+# Raw console output keeps the spaces at the end of input prompts.
+*.txt whitespace=-blank-at-eol
