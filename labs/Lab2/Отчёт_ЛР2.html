@@ -30,24 +30,19 @@ h1, h2, h3 { break-after: avoid; }
 <p>PersonFullName хранит три части ФИО в отдельных полях с явно реализованными свойствами. OptionalText удаляет пробелы по краям и заменяет пустую строку на null для каждой части ФИО. ToString объединяет заданные части одним пробелом. Если все части отсутствуют, возвращается пустая строка.</p>
 <pre class="code">public override string ToString()
 {
-    List&lt;string&gt; parts = new List&lt;string&gt;();
-
-    if (_secondName is not null)
-    {
-        parts.Add(_secondName);
-    }
+    string result = _secondName ?? string.Empty;
 
     if (_name is not null)
     {
-        parts.Add(_name);
+        result += result.Length &gt; 0 ? &quot; &quot; + _name : _name;
     }
 
     if (_patronymic is not null)
     {
-        parts.Add(_patronymic);
+        result += result.Length &gt; 0 ? &quot; &quot; + _patronymic : _patronymic;
     }
 
-    return string.Join(&quot; &quot;, parts);
+    return result;
 }</pre>
 <pre class="code">private static string? OptionalText(string? value)
 {
