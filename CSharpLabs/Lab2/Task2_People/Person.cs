@@ -52,12 +52,12 @@ public class Person
         }
     }
 
-    public Person(string givenName, int height) : this(new PersonFullName(givenName), height, null)
+    public Person(string name, int height) : this(new PersonFullName(name), height, null)
     {
     }
 
-    public Person(string givenName, int height, Person father)
-        : this(new PersonFullName(givenName), height, father)
+    public Person(string name, int height, Person father)
+        : this(new PersonFullName(name), height, father)
     {
     }
 
@@ -97,24 +97,24 @@ public class Person
         }
     }
 
-    private static string MakePatronymic(string givenName)
+    private static string MakePatronymic(string name)
     {
-        if (string.Equals(givenName, "Лев", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(name, "Лев", StringComparison.OrdinalIgnoreCase))
         {
             return "Львович";
         }
 
-        if (string.Equals(givenName, "Пётр", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(givenName, "Петр", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(name, "Пётр", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(name, "Петр", StringComparison.OrdinalIgnoreCase))
         {
             return "Петрович";
         }
 
-        if (givenName.EndsWith('й'))
+        if (name.EndsWith('й'))
         {
-            return givenName[..^1] + "евич";
+            return name[..^1] + "евич";
         }
 
-        return givenName + "ович";
+        return name + "ович";
     }
 }

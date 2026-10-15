@@ -12,8 +12,7 @@ internal static class ConsoleInput
 
         try
         {
-            Console.SetCursorPosition(0, 0);
-            Console.Write("\u001b[2J");
+            Console.Clear();
             Console.SetCursorPosition(0, 0);
         }
         catch (IOException)
