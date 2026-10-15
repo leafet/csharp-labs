@@ -2,26 +2,26 @@ namespace CSharpLabs.Lab2.Task1_Names;
 
 public class PersonFullName
 {
-    private string _name;
+    private string? _name;
     private string? _secondName;
     private string? _patronymic;
 
-    public PersonFullName(string name, string? secondName, string? patronymic)
+    public PersonFullName(string? name, string? secondName, string? patronymic)
     {
-        _name = RequireText(name, nameof(name));
+        _name = OptionalText(name);
         _secondName = OptionalText(secondName);
         _patronymic = OptionalText(patronymic);
     }
 
-    public PersonFullName(string name, string? secondName) : this(name, secondName, null)
+    public PersonFullName(string? name, string? secondName) : this(name, secondName, null)
     {
     }
 
-    public PersonFullName(string name) : this(name, null, null)
+    public PersonFullName(string? name) : this(name, null, null)
     {
     }
 
-    public string Name
+    public string? Name
     {
         get
         {
@@ -29,7 +29,7 @@ public class PersonFullName
         }
         set
         {
-            _name = RequireText(value, nameof(Name));
+            _name = OptionalText(value);
         }
     }
 
@@ -59,25 +59,24 @@ public class PersonFullName
 
     public override string ToString()
     {
-        string result = _name;
+        List<string> parts = new List<string>();
 
         if (_secondName is not null)
         {
-            result = _secondName + " " + result;
+            parts.Add(_secondName);
+        }
+
+        if (_name is not null)
+        {
+            parts.Add(_name);
         }
 
         if (_patronymic is not null)
         {
-            result += " " + _patronymic;
+            parts.Add(_patronymic);
         }
 
-        return result;
-    }
-
-    private static string RequireText(string? value, string parameterName)
-    {
-        string? result = OptionalText(value);
-        return result ?? throw new ArgumentException("Текст не может быть пустым.", parameterName);
+        return string.Join(" ", parts);
     }
 
     private static string? OptionalText(string? value)

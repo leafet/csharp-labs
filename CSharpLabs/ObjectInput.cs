@@ -9,7 +9,7 @@ internal static class ObjectInput
 {
     public static PersonFullName ReadFullName()
     {
-        string name = ConsoleInput.ReadRequiredText("Имя: ");
+        string? name = ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): ");
         string? secondName = ConsoleInput.ReadOptionalText("Фамилия (Enter — пропустить): ");
         string? patronymic = ConsoleInput.ReadOptionalText("Отчество (Enter — пропустить): ");
 
@@ -34,7 +34,7 @@ internal static class ObjectInput
 
         if (nameType == 1)
         {
-            fullName = new PersonFullName(ConsoleInput.ReadRequiredText("Имя: "));
+            fullName = new PersonFullName(ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): "));
         }
         else
         {

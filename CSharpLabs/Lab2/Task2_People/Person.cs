@@ -15,7 +15,7 @@ public class Person
         Father = father;
     }
 
-    public Person(string name, int height, Person father)
+    public Person(string? name, int height, Person father)
         : this(new PersonFullName(name), height, father)
     {
     }
@@ -24,7 +24,7 @@ public class Person
     {
     }
 
-    public Person(string name, int height) : this(new PersonFullName(name), height, null)
+    public Person(string? name, int height) : this(new PersonFullName(name), height, null)
     {
     }
 
@@ -93,9 +93,11 @@ public class Person
             _fullName.SecondName = _father.FullName.SecondName;
         }
 
-        if (_fullName.Patronymic is null)
+        string? fatherName = _father.FullName.Name;
+
+        if (_fullName.Patronymic is null && fatherName is not null)
         {
-            _fullName.Patronymic = MakePatronymic(_father.FullName.Name);
+            _fullName.Patronymic = MakePatronymic(fatherName);
         }
     }
 
