@@ -1,3 +1,8 @@
+using CSharpLabs.Lab2.Task1_Names;
+using CSharpLabs.Lab2.Task2_People;
+using CSharpLabs.Lab2.Task3_Cities;
+using CSharpLabs.Lab2.Task5_Cat;
+
 namespace CSharpLabs;
 
 internal static class ObjectInput

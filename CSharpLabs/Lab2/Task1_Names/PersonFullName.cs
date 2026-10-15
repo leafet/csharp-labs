@@ -1,4 +1,4 @@
-namespace CSharpLabs;
+namespace CSharpLabs.Lab2.Task1_Names;
 
 public class PersonFullName
 {

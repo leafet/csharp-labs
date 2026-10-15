@@ -1,4 +1,6 @@
-namespace CSharpLabs;
+using CSharpLabs.Lab2.Task1_Names;
+
+namespace CSharpLabs.Lab2.Task2_People;
 
 public class Person
 {

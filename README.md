@@ -16,7 +16,6 @@ CSharpLabs/
     Task1_Names/         # имена
     Task2_People/        # люди и родственные связи
     Task3_Cities/        # города
-    Task4_Constructors/  # конструкторы имён и людей
     Task5_Cat/           # кот
 labs/
   Lab1/
@@ -36,7 +35,7 @@ labs/
 | № 1 | [CSharpLabs/Lab1](CSharpLabs/Lab1) | [Условие](labs/Lab1/lab1_csharp.pdf), [отчёт Markdown](labs/Lab1/Отчёт_ЛР1.md), [отчёт HTML](labs/Lab1/Отчёт_ЛР1.html) |
 | № 2, вариант 3 | [CSharpLabs/Lab2](CSharpLabs/Lab2) | [Условие](labs/Lab2/lab2_charp.pdf), [отчёт Markdown](labs/Lab2/Отчёт_ЛР2.md), [отчёт HTML](labs/Lab2/Отчёт_ЛР2.html), [снимки проверок](labs/Lab2/screenshots/live/) |
 
-В ЛР2 папки `Task1_Names`–`Task5_Cat` соответствуют пяти пунктам меню. Общие для нескольких заданий классы `PersonFullName` и `Person` находятся там, где впервые вводятся: в `Task1_Names` и `Task2_People`. Задание `Task4_Constructors` использует их конструкторы без дублирования классов. Статический класс `ConsoleInput` рядом с `Program` проверяет ввод для главного меню и ЛР2.
+В ЛР2 классы объектов находятся в папках соответствующих заданий. Общие классы `PersonFullName` и `Person` находятся в `Task1_Names` и `Task2_People`. Всё меню ЛР2, примеры заданий и сценарии ручного ввода собраны в одном классе `Lab2` в файле `Lab2/Lab2.cs`, без `partial`. Задания 4.5 и 4.6 используют конструкторы этих же классов. Пространства имён соответствуют папкам: например, `CSharpLabs.Lab2.Task1_Names`. Статический класс `ConsoleInput` рядом с `Program` проверяет ввод для главного меню и ЛР2.
 
 ## Запуск
 

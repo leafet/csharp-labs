@@ -24,10 +24,10 @@ public static class Program
                     case 0:
                         return;
                     case 1:
-                        new Lab1().Run();
+                        new Lab1.Lab1().Run();
                         break;
                     case 2:
-                        new Lab2().Run();
+                        new Lab2.Lab2().Run();
                         break;
                 }
             }

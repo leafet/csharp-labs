@@ -1,4 +1,4 @@
-namespace CSharpLabs;
+namespace CSharpLabs.Lab2.Task3_Cities;
 
 public class Route
 {

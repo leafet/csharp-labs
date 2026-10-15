@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace CSharpLabs;
+namespace CSharpLabs.Lab2.Task5_Cat;
 
 public class Cat
 {

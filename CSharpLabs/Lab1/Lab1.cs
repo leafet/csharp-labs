@@ -1,4 +1,4 @@
-namespace CSharpLabs;
+namespace CSharpLabs.Lab1;
 
 public class Lab1
 {
