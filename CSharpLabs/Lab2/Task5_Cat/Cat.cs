@@ -6,6 +6,11 @@ public class Cat
 {
     private string _name = string.Empty;
 
+    public Cat(string name)
+    {
+        Name = name;
+    }
+
     public string Name
     {
         get
@@ -23,11 +28,6 @@ public class Cat
 
             _name = name;
         }
-    }
-
-    public Cat(string name)
-    {
-        Name = name;
     }
 
     public void Meow()

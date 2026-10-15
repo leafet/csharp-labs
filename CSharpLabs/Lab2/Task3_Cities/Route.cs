@@ -5,6 +5,12 @@ public class Route
     private City _destination;
     private int _cost;
 
+    public Route(City destination, int cost)
+    {
+        _destination = destination ?? throw new ArgumentNullException(nameof(destination));
+        Cost = cost;
+    }
+
     public City Destination
     {
         get
@@ -32,12 +38,6 @@ public class Route
 
             _cost = value;
         }
-    }
-
-    public Route(City destination, int cost)
-    {
-        _destination = destination ?? throw new ArgumentNullException(nameof(destination));
-        Cost = cost;
     }
 
     public override string ToString()

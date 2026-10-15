@@ -7,6 +7,12 @@ public class City
     private string _name = string.Empty;
     private readonly List<Route> _routes;
 
+    public City(string name)
+    {
+        Name = name;
+        _routes = new List<Route>();
+    }
+
     public string Name
     {
         get
@@ -32,12 +38,6 @@ public class City
         {
             return _routes.AsReadOnly();
         }
-    }
-
-    public City(string name)
-    {
-        Name = name;
-        _routes = new List<Route>();
     }
 
     public void AddRoute(City destination, int cost)

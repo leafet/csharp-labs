@@ -6,6 +6,21 @@ public class PersonFullName
     private string? _secondName;
     private string? _patronymic;
 
+    public PersonFullName(string name) : this(name, null, null)
+    {
+    }
+
+    public PersonFullName(string name, string? secondName) : this(name, secondName, null)
+    {
+    }
+
+    public PersonFullName(string name, string? secondName, string? patronymic)
+    {
+        _name = RequireText(name, nameof(name));
+        _secondName = OptionalText(secondName);
+        _patronymic = OptionalText(patronymic);
+    }
+
     public string Name
     {
         get
@@ -40,21 +55,6 @@ public class PersonFullName
         {
             _patronymic = OptionalText(value);
         }
-    }
-
-    public PersonFullName(string name) : this(name, null, null)
-    {
-    }
-
-    public PersonFullName(string name, string? secondName) : this(name, secondName, null)
-    {
-    }
-
-    public PersonFullName(string name, string? secondName, string? patronymic)
-    {
-        _name = RequireText(name, nameof(name));
-        _secondName = OptionalText(secondName);
-        _patronymic = OptionalText(patronymic);
     }
 
     public override string ToString()
