@@ -56,7 +56,8 @@ public class Lab1
                     Console.WriteLine(isUpperCase(ReadChar("Введите символ: ")));
                     break;
                 case 4:
-                    Console.WriteLine(isDivisor(ReadInt("Введите число a: "), ReadInt("Введите число b: ")));
+                    Console.WriteLine(
+                        isDivisor(ReadInt("Введите число a: "), ReadInt("Введите число b: ")));
                     break;
                 case 5:
                     Console.WriteLine("Последовательное сложение пяти чисел (сумма цифр разряда единиц).");
@@ -73,10 +74,12 @@ public class Lab1
 
                 // Задание 2. Условия
                 case 6:
-                    Console.WriteLine(safeDiv(ReadInt("Введите делимое x: "), ReadInt("Введите делитель y: ")));
+                    Console.WriteLine(
+                        safeDiv(ReadInt("Введите делимое x: "), ReadInt("Введите делитель y: ")));
                     break;
                 case 7:
-                    Console.WriteLine(makeDecision(ReadInt("Введите число x: "), ReadInt("Введите число y: ")));
+                    Console.WriteLine(
+                        makeDecision(ReadInt("Введите число x: "), ReadInt("Введите число y: ")));
                     break;
                 case 8:
                     Console.WriteLine(sum3(ReadInt("Введите число x: "), ReadInt("Введите число y: "),
@@ -139,11 +142,14 @@ public class Lab1
                     Console.WriteLine($"Изменённый массив: {ArrayToString(arr)}");
                     break;
                 case 19:
-                    Console.WriteLine(ArrayToString(concat(ReadArray("Введите элементы первого массива через пробел: "),
+                    Console.WriteLine(
+                        ArrayToString(concat(ReadArray("Введите элементы первого массива через пробел: "),
                         ReadArray("Введите элементы второго массива через пробел: "))));
                     break;
                 case 20:
-                    Console.WriteLine(ArrayToString(deleteNegative(ReadArray("Введите элементы массива через пробел: "))));
+                    Console.WriteLine(
+                        ArrayToString(
+                            deleteNegative(ReadArray("Введите элементы массива через пробел: "))));
                     break;
 
                 default:

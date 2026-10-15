@@ -2,31 +2,31 @@ namespace CSharpLabs;
 
 public class PersonFullName
 {
-    private string _givenName;
-    private string? _familyName;
+    private string _name;
+    private string? _secondName;
     private string? _patronymic;
 
-    public string GivenName
+    public string Name
     {
         get
         {
-            return _givenName;
+            return _name;
         }
         set
         {
-            _givenName = RequireText(value, nameof(GivenName));
+            _name = RequireText(value, nameof(Name));
         }
     }
 
-    public string? FamilyName
+    public string? SecondName
     {
         get
         {
-            return _familyName;
+            return _secondName;
         }
         set
         {
-            _familyName = OptionalText(value);
+            _secondName = OptionalText(value);
         }
     }
 
@@ -42,28 +42,28 @@ public class PersonFullName
         }
     }
 
-    public PersonFullName(string givenName) : this(givenName, null, null)
+    public PersonFullName(string name) : this(name, null, null)
     {
     }
 
-    public PersonFullName(string givenName, string? familyName) : this(givenName, familyName, null)
+    public PersonFullName(string name, string? secondName) : this(name, secondName, null)
     {
     }
 
-    public PersonFullName(string givenName, string? familyName, string? patronymic)
+    public PersonFullName(string name, string? secondName, string? patronymic)
     {
-        _givenName = RequireText(givenName, nameof(givenName));
-        _familyName = OptionalText(familyName);
+        _name = RequireText(name, nameof(name));
+        _secondName = OptionalText(secondName);
         _patronymic = OptionalText(patronymic);
     }
 
     public override string ToString()
     {
-        string result = _givenName;
+        string result = _name;
 
-        if (_familyName is not null)
+        if (_secondName is not null)
         {
-            result = _familyName + " " + result;
+            result = _secondName + " " + result;
         }
 
         if (_patronymic is not null)

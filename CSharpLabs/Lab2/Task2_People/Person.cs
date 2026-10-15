@@ -86,14 +86,14 @@ public class Person
             return;
         }
 
-        if (_fullName.FamilyName is null)
+        if (_fullName.SecondName is null)
         {
-            _fullName.FamilyName = _father.FullName.FamilyName;
+            _fullName.SecondName = _father.FullName.SecondName;
         }
 
         if (_fullName.Patronymic is null)
         {
-            _fullName.Patronymic = MakePatronymic(_father.FullName.GivenName);
+            _fullName.Patronymic = MakePatronymic(_father.FullName.Name);
         }
     }
 
