@@ -8,8 +8,11 @@ public class Person
     private int _height;
     private Person? _father;
 
-    public Person(string name, int height) : this(new PersonFullName(name), height, null)
+    public Person(PersonFullName fullName, int height, Person? father)
     {
+        _fullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+        Height = height;
+        Father = father;
     }
 
     public Person(string name, int height, Person father)
@@ -21,11 +24,8 @@ public class Person
     {
     }
 
-    public Person(PersonFullName fullName, int height, Person? father)
+    public Person(string name, int height) : this(new PersonFullName(name), height, null)
     {
-        _fullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
-        Height = height;
-        Father = father;
     }
 
     public PersonFullName FullName
