@@ -4,11 +4,11 @@ namespace CSharpLabs.Lab2.Task5_Cat;
 
 public class Cat
 {
-    private string _name = string.Empty;
+    private string _name;
 
     public Cat(string name)
     {
-        Name = name;
+        _name = ValidateName(name);
     }
 
     public string Name
@@ -19,14 +19,7 @@ public class Cat
         }
         set
         {
-            string? name = value?.Trim();
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Имя кота не может быть пустым.", nameof(value));
-            }
-
-            _name = name;
+            _name = ValidateName(value);
         }
     }
 
@@ -37,9 +30,9 @@ public class Cat
 
     public void Meow(int count)
     {
-        if (count < 1 || count > 100)
+        if (count < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(count), "Количество должно быть от 1 до 100.");
+            throw new ArgumentOutOfRangeException(nameof(count), "Количество мяуканий должно быть положительным.");
         }
 
         StringBuilder sound = new StringBuilder(_name + ": ");
@@ -62,5 +55,17 @@ public class Cat
     public override string ToString()
     {
         return "кот: " + _name;
+    }
+
+    private static string ValidateName(string? value)
+    {
+        string? name = value?.Trim();
+
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("Имя кота не может быть пустым.", nameof(value));
+        }
+
+        return name;
     }
 }

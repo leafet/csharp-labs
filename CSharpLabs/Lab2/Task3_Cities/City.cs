@@ -4,12 +4,12 @@ namespace CSharpLabs.Lab2.Task3_Cities;
 
 public class City
 {
-    private string _name = string.Empty;
+    private string _name;
     private readonly List<Route> _routes;
 
     public City(string name)
     {
-        Name = name;
+        _name = ValidateName(name);
         _routes = new List<Route>();
     }
 
@@ -21,14 +21,7 @@ public class City
         }
         set
         {
-            string? name = value?.Trim();
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("Название города не может быть пустым.", nameof(value));
-            }
-
-            _name = name;
+            _name = ValidateName(value);
         }
     }
 
@@ -82,5 +75,17 @@ public class City
         result.Append(']');
 
         return result.ToString();
+    }
+
+    private static string ValidateName(string? value)
+    {
+        string? name = value?.Trim();
+
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("Название города не может быть пустым.", nameof(value));
+        }
+
+        return name;
     }
 }
