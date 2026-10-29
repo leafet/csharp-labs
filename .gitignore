@@ -8,6 +8,11 @@ riderModule.iml
 .pi/
 __pycache__/
 *.pyc
+.venv-lab3/
+/tmp/
+/tools/
+/labs/Lab3/data/
+/labs/Lab3/screenshots/logs/
 /Отчёт.md
 /Отчёт_ЛР1_standalone.md
 /screenshots/embed/

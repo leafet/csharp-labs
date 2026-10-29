@@ -15,9 +15,10 @@ public static class Program
                 ConsoleInput.ClearScreen();
                 Console.WriteLine("1 — Лабораторная работа №1");
                 Console.WriteLine("2 — Лабораторная работа №2, вариант 3");
+                Console.WriteLine("3 — Лабораторная работа №3, вариант 3");
                 Console.WriteLine("0 — Выход");
 
-                int choice = ConsoleInput.ReadInt("Выберите лабораторную работу: ", 0, 2);
+                int choice = ConsoleInput.ReadInt("Выберите лабораторную работу: ", 0, 3);
 
                 switch (choice)
                 {
@@ -28,6 +29,9 @@ public static class Program
                         break;
                     case 2:
                         new Lab2.Lab2().Run();
+                        break;
+                    case 3:
+                        new Lab3.Lab3().Run();
                         break;
                 }
             }

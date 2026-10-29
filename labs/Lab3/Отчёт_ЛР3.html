@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Лабораторная работа №3 — вариант 3</title><style>
+body { font-family: 'Times New Roman', serif; font-size: 13pt; max-width: 900px;
+       margin: 2rem auto; padding: 0 1rem; line-height: 1.45; color: #111; }
+h1 { font-size: 18pt; margin-top: 1.5rem; }
+h2 { font-size: 15pt; margin-top: 1.4rem; }
+h3 { font-size: 13.5pt; margin-top: 1.1rem; }
+pre.code { font-family: Consolas, monospace; font-size: 10pt; background: #f4f6f8;
+           border: 1px solid #d6dce3; border-left: 4px solid #3b6e8f;
+           padding: .6rem .8rem; overflow-x: auto; white-space: pre; line-height: 1.35; }
+code { font-family: Consolas, monospace; font-size: 11pt; background: #f2f2f2; padding: 0 .2rem; }
+figure { margin: .8rem 0; text-align: center; page-break-inside: avoid; }
+figure img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+figcaption { font-size: 10pt; color: #555; font-style: italic; margin-top: .25rem; }
+hr { border: 0; border-top: 1px solid #bbb; margin: 1.6rem 0; }
+@media print { body { max-width: none; } }
+
+pre.code { white-space: pre-wrap; overflow-wrap: anywhere; }
+h1, h2, h3 { break-after: avoid; }
+.member-table { width: 100%; border-collapse: collapse; margin: .6rem 0 1rem; }
+.member-table th, .member-table td { border: 1px solid #cbd2d9; padding: .35rem .55rem; text-align: left; vertical-align: top; }
+.member-table th { background: #f4f6f8; }
+
+@media print { .member-table tr { break-inside: avoid; } pre.code { break-inside: avoid; } }
+
+.code-label { font-weight: 700; margin-bottom: .35rem; }
+ol { padding-left: 1.6rem; } li { margin-bottom: .3rem; }
+
+@media print { .member-table tr { break-inside: avoid; } pre.code { break-inside: avoid; } }
+
+.code-label { font-weight: 700; margin-bottom: .35rem; }
+ol { padding-left: 1.6rem; } li { margin-bottom: .3rem; }
+</style></head><body><h1>Братилов Захар, группа ИТ-1,2. Лабораторная работа №3</h1>
+<p>Вариант 3. Массивы и файлы. Выполнены задачи варианта 3 из всех восьми заданий в одном проекте .NET 10. Задания 1–3 находятся в классе Matrix, задания 4–8 — в отдельном статическом классе FileTasks.</p>
+<p>В главном меню выберите 3. Пункты 1–8 меню ЛР3 запускают воспроизводимые примеры; пункт 9 позволяет ввести параметры и объекты. В демонстрациях используется new Random(3); это случайное заполнение с фиксированным начальным состоянием для повторяемости проверок. Файлы создаются в labs/Lab3/data относительно текущего каталога. Запускать из корня репозитория.</p>
+<p>Оформление повторяет структуру отчёта ЛР2: класс, условие, описание, код примера, результат и ручной ввод. Изображения ниже визуализируют настоящий вывод программы, а не интерактивные снимки терминала.</p>
+<p>Код не использует автосвойства, LINQ и лямбда-выражения. Применены именование PascalCase/camelCase, поля _camelCase, отступы в четыре пробела и скобки Allman согласно <a href="https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions">руководству Microsoft</a>.</p>
+<h1>Задание 1. Заполнение двумерных массивов</h1>
+<h2>Задача 1.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>Первый массив n×m заполняется с клавиатуры по столбцам сверху вниз. Во втором массиве n×n выше побочной диагонали находятся случайные целые числа [-12; 4565], на диагонали и ниже — [-1024; 1024]. Третий массив заполняется по рисунку для произвольного n.</p>
+<h3>Класс и описание задачи</h3>
+<p>Класс Matrix содержит единственное поле long[,] _values. Три перегруженных конструктора выполняют ввод, случайное и закономерное заполнение. Для побочной диагонали проверяется row + column &lt; size − 1. В третьем конструкторе диагонали обходятся от правого нижнего угла снизу вверх. Незаполненная часть остаётся нулевой. При n=5 получается точный рисунок из задания. Доступ к размерам и элементам реализован явно, без автосвойств.</p>
+<p><strong>Полный код Matrix для заданий 1–3</strong></p>
+<pre class="code"><code class="language-csharp">using System.Globalization;
+using System.Text;
+
+namespace CSharpLabs.Lab3;
+
+/// &lt;summary&gt;Целочисленная матрица и операции заданий 1–3.&lt;/summary&gt;
+public class Matrix
+{
+    private readonly long[,] _values;
+
+    /// &lt;summary&gt;Вводит прямоугольную матрицу по столбцам сверху вниз.&lt;/summary&gt;
+    public Matrix(int rows, int columns)
+    {
+        ValidateDimensions(rows, columns);
+        _values = new long[rows, columns];
+
+        for (int column = 0; column &lt; columns; column++)
+        {
+            for (int row = 0; row &lt; rows; row++)
+            {
+                _values[row, column] = ConsoleInput.ReadInt(
+                    $&quot;Элемент [{row + 1}, {column + 1}]: &quot;, int.MinValue, int.MaxValue);
+            }
+        }
+    }
+
+    /// &lt;summary&gt;Заполняет квадратную матрицу случайными числами по условию.&lt;/summary&gt;
+    public Matrix(int size, Random random)
+    {
+        ValidateDimensions(size, size);
+        ArgumentNullException.ThrowIfNull(random);
+        _values = new long[size, size];
+
+        for (int row = 0; row &lt; size; row++)
+        {
+            for (int column = 0; column &lt; size; column++)
+            {
+                _values[row, column] = row + column &lt; size - 1
+                    ? random.Next(-12, 4566)
+                    : random.Next(-1024, 1025);
+            }
+        }
+    }
+
+    /// &lt;summary&gt;Заполняет нижний правый треугольник по диагоналям от правого нижнего угла.&lt;/summary&gt;
+    public Matrix(int size)
+    {
+        ValidateDimensions(size, size);
+        _values = new long[size, size];
+        long value = 1;
+
+        for (int diagonal = 0; diagonal &lt; size; diagonal++)
+        {
+            for (int offset = 0; offset &lt;= diagonal; offset++)
+            {
+                _values[size - 1 - offset, size - 1 - diagonal + offset] = value;
+                value++;
+            }
+        }
+    }
+
+    /// &lt;summary&gt;Создаёт независимую копию переданного массива.&lt;/summary&gt;
+    public Matrix(long[,] values)
+    {
+        ArgumentNullException.ThrowIfNull(values);
+        ValidateDimensions(values.GetLength(0), values.GetLength(1));
+        _values = (long[,])values.Clone();
+    }
+
+    /// &lt;summary&gt;Количество строк.&lt;/summary&gt;
+    public int Rows
+    {
+        get
+        {
+            return _values.GetLength(0);
+        }
+    }
+
+    /// &lt;summary&gt;Количество столбцов.&lt;/summary&gt;
+    public int Columns
+    {
+        get
+        {
+            return _values.GetLength(1);
+        }
+    }
+
+    /// &lt;summary&gt;Возвращает элемент по индексам с нуля.&lt;/summary&gt;
+    public long this[int row, int column]
+    {
+        get
+        {
+            return _values[row, column];
+        }
+    }
+
+    /// &lt;summary&gt;Находит первый при обходе по строкам блок 3×3 с максимальной суммой.&lt;/summary&gt;
+    public Matrix FindMaximumBlock(out int top, out int left, out long sum)
+    {
+        if (Rows &lt; 3 || Columns &lt; 3)
+        {
+            throw new InvalidOperationException(&quot;Для блока 3×3 нужны минимум три строки и три столбца.&quot;);
+        }
+
+        top = 0;
+        left = 0;
+        sum = long.MinValue;
+
+        for (int row = 0; row &lt;= Rows - 3; row++)
+        {
+            for (int column = 0; column &lt;= Columns - 3; column++)
+            {
+                long current = 0;
+
+                for (int i = 0; i &lt; 3; i++)
+                {
+                    for (int j = 0; j &lt; 3; j++)
+                    {
+                        current = checked(current + _values[row + i, column + j]);
+                    }
+                }
+
+                if (current &gt; sum)
+                {
+                    sum = current;
+                    top = row;
+                    left = column;
+                }
+            }
+        }
+
+        long[,] block = new long[3, 3];
+
+        for (int row = 0; row &lt; 3; row++)
+        {
+            for (int column = 0; column &lt; 3; column++)
+            {
+                block[row, column] = _values[top + row, left + column];
+            }
+        }
+
+        return new Matrix(block);
+    }
+
+    /// &lt;summary&gt;Транспонирует матрицу.&lt;/summary&gt;
+    public Matrix Transpose()
+    {
+        long[,] result = new long[Columns, Rows];
+
+        for (int row = 0; row &lt; Rows; row++)
+        {
+            for (int column = 0; column &lt; Columns; column++)
+            {
+                result[column, row] = _values[row, column];
+            }
+        }
+
+        return new Matrix(result);
+    }
+
+    /// &lt;summary&gt;Складывает матрицы одинакового размера.&lt;/summary&gt;
+    public static Matrix operator +(Matrix first, Matrix second)
+    {
+        ArgumentNullException.ThrowIfNull(first);
+        ArgumentNullException.ThrowIfNull(second);
+
+        if (first.Rows != second.Rows || first.Columns != second.Columns)
+        {
+            throw new ArgumentException(&quot;Размеры слагаемых матриц должны совпадать.&quot;);
+        }
+
+        long[,] result = new long[first.Rows, first.Columns];
+
+        for (int row = 0; row &lt; first.Rows; row++)
+        {
+            for (int column = 0; column &lt; first.Columns; column++)
+            {
+                result[row, column] = checked(first[row, column] + second[row, column]);
+            }
+        }
+
+        return new Matrix(result);
+    }
+
+    /// &lt;summary&gt;Умножает матрицу на целое число слева.&lt;/summary&gt;
+    public static Matrix operator *(long factor, Matrix matrix)
+    {
+        ArgumentNullException.ThrowIfNull(matrix);
+        long[,] result = new long[matrix.Rows, matrix.Columns];
+
+        for (int row = 0; row &lt; matrix.Rows; row++)
+        {
+            for (int column = 0; column &lt; matrix.Columns; column++)
+            {
+                result[row, column] = checked(factor * matrix[row, column]);
+            }
+        }
+
+        return new Matrix(result);
+    }
+
+    /// &lt;summary&gt;Умножает матрицу на целое число справа.&lt;/summary&gt;
+    public static Matrix operator *(Matrix matrix, long factor)
+    {
+        return factor * matrix;
+    }
+
+    /// &lt;summary&gt;Возвращает таблицу с выравниванием элементов.&lt;/summary&gt;
+    public override string ToString()
+    {
+        int width = 1;
+
+        foreach (long value in _values)
+        {
+            width = Math.Max(width, value.ToString(CultureInfo.InvariantCulture).Length);
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for (int row = 0; row &lt; Rows; row++)
+        {
+            for (int column = 0; column &lt; Columns; column++)
+            {
+                if (column &gt; 0)
+                {
+                    result.Append(' ');
+                }
+
+                result.Append(_values[row, column].ToString(CultureInfo.InvariantCulture).PadLeft(width));
+            }
+
+            if (row &lt; Rows - 1)
+            {
+                result.AppendLine();
+            }
+        }
+
+        return result.ToString();
+    }
+
+    private static void ValidateDimensions(int rows, int columns)
+    {
+        if (rows &lt;= 0 || columns &lt;= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(rows), &quot;Размеры матрицы должны быть положительными.&quot;);
+        }
+    }
+}
+</code></pre>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunFilling(bool manual)
+{
+    Matrix first;
+    int size = 5;
+
+    if (manual)
+    {
+        first = ReadMatrix(&quot;Первая матрица&quot;);
+        size = ConsoleInput.ReadInt(&quot;Размер квадратных матриц (1–20): &quot;, 1, 20);
+    }
+    else
+    {
+        Console.WriteLine(&quot;Ввод по столбцам: 1, 2, 3, 4, 5, 6.&quot;);
+        first = new Matrix(new long[,] { { 1, 3, 5 }, { 2, 4, 6 } });
+    }
+
+    Console.WriteLine(&quot;Первая матрица:&quot;);
+    Console.WriteLine(first);
+    Console.WriteLine(&quot;Вторая матрица: выше побочной [-12;4565], на ней и ниже [-1024;1024]:&quot;);
+    Console.WriteLine(new Matrix(size, new Random(3)));
+    Console.WriteLine(&quot;Третья матрица:&quot;);
+    Console.WriteLine(new Matrix(size));
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 1" src="screenshots/results/task1.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 1: ввод 1–6 по столбцам в массив 2×3 даёт строки 1 3 5 и 2 4 6; для n=1 закономерная матрица содержит 1.</p>
+<p><img alt="Ручная проверка задания 1" src="screenshots/results/manual1.png" /></p>
+<h1>Задание 2. Работа с двумерными массивами</h1>
+<h2>Задача 2.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>В массиве n×m найти подмассив 3×3 с максимальной суммой. Размеры могут быть не кратны трём.</p>
+<h3>Класс и описание задачи</h3>
+<p>FindMaximumBlock перебирает все допустимые левые верхние углы, включая перекрывающиеся блоки и последние строки/столбцы. Для каждого блока суммируются девять элементов. Начальное значение long.MinValue позволяет обрабатывать полностью отрицательные массивы. При равенстве выбирается первый блок при обходе по строкам. Возвращаются блок, его сумма и координаты; на экран координаты выводятся с единицы. Сложность O(nm), дополнительная память для результата постоянна.</p>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunMaximumBlock(bool manual)
+{
+    Matrix matrix = manual ? ReadMatrix(&quot;Исходная матрица&quot;, 3) : new Matrix(new long[,]
+    {
+        { 1, 2, 3, 4, 5 },
+        { 6, 7, 8, 9, 10 },
+        { 11, 12, 13, 14, 15 },
+        { 16, 17, 18, 19, 20 }
+    });
+    Console.WriteLine(&quot;Исходная матрица:&quot;);
+    Console.WriteLine(matrix);
+    Matrix block = matrix.FindMaximumBlock(out int row, out int column, out long sum);
+    Console.WriteLine($&quot;Начало блока: строка {row + 1}, столбец {column + 1}; сумма = {sum}.&quot;);
+    Console.WriteLine(block);
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 2" src="screenshots/results/task2.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 2: отрицательный массив 3×4 даёт максимальную сумму −63 в блоке с первого ряда, второго столбца. Проверяется крайний правый блок.</p>
+<p><img alt="Ручная проверка задания 2" src="screenshots/results/manual2.png" /></p>
+<h1>Задание 3. Работа с двумерными массивами как с матрицами</h1>
+<h2>Задача 3.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>Вычислить Aᵀ + 2B + Cᵀ, перегрузив необходимые операторы. Вывод матриц реализовать через ToString. Приложить снимок проверки в онлайн-калькуляторе.</p>
+<h3>Класс и описание задачи</h3>
+<p>Transpose меняет строки и столбцы местами. Перегружены + для двух матриц и * для числа и матрицы с обеих сторон. Выражение вычисляется непосредственно как a.Transpose() + 2 * b + c.Transpose(). Операнды сохраняются. Размер B должен совпадать с размером транспонированных A и C; квадратность не требуется. Арифметика checked обнаруживает переполнение long.</p>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunExpression(bool manual)
+{
+    Matrix a;
+    Matrix b;
+    Matrix c;
+
+    if (manual)
+    {
+        int rows = ConsoleInput.ReadInt(&quot;Число строк A и C (1–20): &quot;, 1, 20);
+        int columns = ConsoleInput.ReadInt(&quot;Число столбцов A и C (1–20): &quot;, 1, 20);
+        Console.WriteLine(&quot;Матрица A, ввод по столбцам:&quot;);
+        a = new Matrix(rows, columns);
+        Console.WriteLine(&quot;Матрица B, размеры обратные размерам A:&quot;);
+        b = new Matrix(columns, rows);
+        Console.WriteLine(&quot;Матрица C:&quot;);
+        c = new Matrix(rows, columns);
+    }
+    else
+    {
+        a = new Matrix(new long[,] { { 1, 2 }, { 3, 4 } });
+        b = new Matrix(new long[,] { { 5, 6 }, { 7, 8 } });
+        c = new Matrix(new long[,] { { 9, 10 }, { 11, 12 } });
+    }
+
+    Console.WriteLine($&quot;A:\n{a}\nB:\n{b}\nC:\n{c}&quot;);
+    Matrix result = a.Transpose() + 2 * b + c.Transpose();
+    Console.WriteLine($&quot;Aᵀ + 2*B + Cᵀ:\n{result}&quot;);
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 3" src="screenshots/results/task3.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 3: A и C размера 1×2 и B размера 2×1 дают прямоугольный результат с элементами 12 и 16.</p>
+<p><img alt="Ручная проверка задания 3" src="screenshots/results/manual3.png" /></p>
+<h3>Независимая проверка выражения</h3>
+<p>Для демонстрации A=[[1,2],[3,4]], B=[[5,6],[7,8]], C=[[9,10],[11,12]]. Aᵀ=[[1,3],[2,4]], 2B=[[10,12],[14,16]], Cᵀ=[[9,11],[10,12]]. Поэлементная сумма равна [[20,26],[26,32]] и совпадает с программой.</p>
+<p>Проверка в <a href="https://matrixcalc.org/ru/">онлайн-калькуляторе MatrixCalc</a>: выражение <code>{{1,2},{3,4}}^T+2*{{5,6},{7,8}}+{{9,10},{11,12}}^T</code> даёт тот же результат [[20,26],[26,32]].</p>
+<p><img alt="Проверка выражения в онлайн-калькуляторе MatrixCalc" src="screenshots/results/matrixcalc.jpg" /></p>
+<h1>Задание 4. Бинарные файлы</h1>
+<h2>Задача 4.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>Получить в новом бинарном файле все компоненты исходного, которые делятся на m и не делятся на n. Исходный файл заполнить случайными числами отдельным методом.</p>
+<h3>Класс и описание задачи</h3>
+<p>FillBinaryNumbers записывает случайные Int32 через BinaryWriter. FilterBinaryNumbers последовательно читает числа через BinaryReader и записывает подходящие в новый файл, сохраняя порядок и повторы. Условие: value % m == 0 &amp;&amp; value % n != 0. Нулевые делители запрещены; остаток вычисляется после расширения до long для случая int.MinValue и −1. Ноль не проходит фильтр, поскольку кратен обоим делителям.</p>
+<p><strong>Методы FileTasks</strong></p>
+<pre class="code"><code class="language-csharp">public static void FillBinaryNumbers(string path, int count, Random random)
+{
+    ArgumentOutOfRangeException.ThrowIfNegative(count);
+    ArgumentNullException.ThrowIfNull(random);
+    using BinaryWriter writer = new BinaryWriter(File.Create(path));
+
+    for (int i = 0; i &lt; count; i++)
+    {
+        writer.Write(random.Next(-100, 101));
+    }
+}
+
+public static void FilterBinaryNumbers(string source, string destination, int m, int n)
+{
+    ValidateDifferentPaths(source, destination);
+
+    if (m == 0 || n == 0)
+    {
+        throw new ArgumentException(&quot;Делители m и n не должны быть равны нулю.&quot;);
+    }
+
+    using BinaryReader reader = new BinaryReader(File.OpenRead(source));
+
+    if (reader.BaseStream.Length % sizeof(int) != 0)
+    {
+        throw new InvalidDataException(&quot;Бинарный файл должен содержать целые Int32.&quot;);
+    }
+
+    using BinaryWriter writer = new BinaryWriter(File.Create(destination));
+
+    while (reader.BaseStream.Position &lt; reader.BaseStream.Length)
+    {
+        int value = reader.ReadInt32();
+
+        // Расширение до long исключает переполнение int.MinValue % -1.
+        if ((long)value % m == 0 &amp;&amp; (long)value % n != 0)
+        {
+            writer.Write(value);
+        }
+    }
+}
+
+public static string ReadBinaryNumbers(string path)
+{
+    using BinaryReader reader = new BinaryReader(File.OpenRead(path));
+    StringBuilder result = new StringBuilder();
+
+    while (reader.BaseStream.Position &lt; reader.BaseStream.Length)
+    {
+        if (result.Length &gt; 0)
+        {
+            result.Append(' ');
+        }
+
+        result.Append(reader.ReadInt32());
+    }
+
+    return result.Length == 0 ? &quot;(пусто)&quot; : result.ToString();
+}
+
+private static void ValidateDifferentPaths(string source, string destination)
+{
+    if (string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination),
+        StringComparison.OrdinalIgnoreCase))
+    {
+        throw new ArgumentException(&quot;Исходный и выходной файлы должны различаться.&quot;);
+    }
+}
+</code></pre>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunBinary(bool manual)
+{
+    int count = manual ? ConsoleInput.ReadInt(&quot;Количество чисел (0–100): &quot;, 0, 100) : 20;
+    int m = manual ? ReadNonzero(&quot;Делитель m: &quot;) : 3;
+    int n = manual ? ReadNonzero(&quot;Делитель n: &quot;) : 2;
+    string source = DataPath(&quot;numbers.bin&quot;);
+    string destination = DataPath(&quot;filtered.bin&quot;);
+    FileTasks.FillBinaryNumbers(source, count, new Random(3));
+    FileTasks.FilterBinaryNumbers(source, destination, m, n);
+    Console.WriteLine($&quot;Исходный файл: {source}\n{FileTasks.ReadBinaryNumbers(source)}&quot;);
+    Console.WriteLine($&quot;m = {m}, n = {n}&quot;);
+    Console.WriteLine($&quot;Результат: {destination}\n{FileTasks.ReadBinaryNumbers(destination)}&quot;);
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 4" src="screenshots/results/task4.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 4: пустой исходный файл создаёт пустой результат; нулевой делитель отклоняется с повторным запросом.</p>
+<p><img alt="Ручная проверка задания 4" src="screenshots/results/manual4.png" /></p>
+<h1>Задание 5. Бинарные файлы и структуры</h1>
+<h2>Задача 5.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>Багаж пассажира — массив структур с названием и массой единицы багажа. Выяснить, имеется ли пассажир с одной единицей багажа массой менее m кг. Заполнение файла выполнить отдельным методом с обязательной XML-сериализацией.</p>
+<h3>Класс и описание задачи</h3>
+<p>BaggageItem и Passenger являются struct. Passenger содержит массив BaggageItem. Все свойства имеют явные поля. FillPassengers сериализует Passenger[] с помощью XmlSerializer в XML UTF-8, затем BinaryWriter записывает длину XML (Int32) и его байты в passengers.bin. Такой контейнер совмещает требование бинарного файла с обязательной XML-сериализацией; он не является побайтовой копией памяти struct. ReadPassengers читает длину, проверяет её и десериализует XML. Проверка выполняется после чтения файла: единица должна быть ровно одна, её масса строго меньше m. Масса хранится в decimal.</p>
+<p><strong>Полный код BaggageItem</strong></p>
+<pre class="code"><code class="language-csharp">namespace CSharpLabs.Lab3;
+
+/// &lt;summary&gt;Единица багажа, сериализуемая в XML.&lt;/summary&gt;
+public struct BaggageItem
+{
+    private string? _name;
+    private decimal _mass;
+
+    /// &lt;summary&gt;Создаёт единицу багажа с названием и массой в килограммах.&lt;/summary&gt;
+    public BaggageItem(string name, decimal mass)
+    {
+        _name = null;
+        _mass = 0;
+        Name = name;
+        Mass = mass;
+    }
+
+    /// &lt;summary&gt;Название единицы багажа.&lt;/summary&gt;
+    public string Name
+    {
+        get
+        {
+            return _name ?? string.Empty;
+        }
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            _name = value.Trim();
+        }
+    }
+
+    /// &lt;summary&gt;Положительная масса в килограммах.&lt;/summary&gt;
+    public decimal Mass
+    {
+        get
+        {
+            return _mass;
+        }
+        set
+        {
+            if (value &lt;= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), &quot;Масса должна быть положительной.&quot;);
+            }
+
+            _mass = value;
+        }
+    }
+}
+</code></pre>
+<p><strong>Полный код Passenger</strong></p>
+<pre class="code"><code class="language-csharp">namespace CSharpLabs.Lab3;
+
+/// &lt;summary&gt;Пассажир и массив единиц его багажа для XML-сериализации.&lt;/summary&gt;
+public struct Passenger
+{
+    private string? _name;
+    private BaggageItem[]? _items;
+
+    /// &lt;summary&gt;Создаёт запись пассажира.&lt;/summary&gt;
+    public Passenger(string name, BaggageItem[] items)
+    {
+        _name = null;
+        _items = null;
+        Name = name;
+        Items = items;
+    }
+
+    /// &lt;summary&gt;Имя пассажира.&lt;/summary&gt;
+    public string Name
+    {
+        get
+        {
+            return _name ?? string.Empty;
+        }
+        set
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(value);
+            _name = value.Trim();
+        }
+    }
+
+    /// &lt;summary&gt;Массив единиц багажа; пустой массив означает отсутствие багажа.&lt;/summary&gt;
+    public BaggageItem[] Items
+    {
+        get
+        {
+            return _items ?? Array.Empty&lt;BaggageItem&gt;();
+        }
+        set
+        {
+            ArgumentNullException.ThrowIfNull(value);
+            _items = value;
+        }
+    }
+}
+</code></pre>
+<p><strong>Методы FileTasks</strong></p>
+<pre class="code"><code class="language-csharp">public static void FillPassengers(string path, Passenger[] passengers)
+{
+    ArgumentNullException.ThrowIfNull(passengers);
+    XmlSerializer serializer = new XmlSerializer(typeof(Passenger[]));
+    using MemoryStream xml = new MemoryStream();
+    serializer.Serialize(xml, passengers);
+    byte[] data = xml.ToArray();
+    using BinaryWriter writer = new BinaryWriter(File.Create(path));
+    writer.Write(data.Length);
+    writer.Write(data);
+}
+
+public static Passenger[] ReadPassengers(string path)
+{
+    using BinaryReader reader = new BinaryReader(File.OpenRead(path));
+    int length = reader.ReadInt32();
+
+    if (length &lt; 0 || length != reader.BaseStream.Length - sizeof(int))
+    {
+        throw new InvalidDataException(&quot;Повреждена длина XML в бинарном файле.&quot;);
+    }
+
+    using MemoryStream xml = new MemoryStream(reader.ReadBytes(length));
+    XmlSerializer serializer = new XmlSerializer(typeof(Passenger[]));
+    return (Passenger[])(serializer.Deserialize(xml)
+        ?? throw new InvalidDataException(&quot;В файле нет массива пассажиров.&quot;));
+}
+
+public static bool HasLightSingleBaggage(string path, decimal m)
+{
+    ArgumentOutOfRangeException.ThrowIfNegativeOrZero(m);
+    Passenger[] passengers = ReadPassengers(path);
+
+    foreach (Passenger passenger in passengers)
+    {
+        if (passenger.Items.Length == 1 &amp;&amp; passenger.Items[0].Mass &lt; m)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+</code></pre>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunPassengers(bool manual)
+{
+    Passenger[] passengers =
+    {
+        new Passenger(&quot;Анна&quot;, new[] { new BaggageItem(&quot;Сумка&quot;, 4) }),
+        new Passenger(&quot;Борис&quot;, new[] { new BaggageItem(&quot;Чемодан&quot;, 12), new BaggageItem(&quot;Коробка&quot;, 2) }),
+        new Passenger(&quot;Вера&quot;, new[] { new BaggageItem(&quot;Рюкзак&quot;, 5) })
+    };
+    decimal m = 5;
+
+    if (manual)
+    {
+        int count = ConsoleInput.ReadInt(&quot;Количество пассажиров (0–20): &quot;, 0, 20);
+        passengers = new Passenger[count];
+
+        for (int i = 0; i &lt; count; i++)
+        {
+            string name = ConsoleInput.ReadRequiredText($&quot;Имя пассажира {i + 1}: &quot;);
+            int itemsCount = ConsoleInput.ReadInt(&quot;Количество единиц багажа (0–20): &quot;, 0, 20);
+            BaggageItem[] items = new BaggageItem[itemsCount];
+
+            for (int j = 0; j &lt; itemsCount; j++)
+            {
+                string itemName = ConsoleInput.ReadRequiredText($&quot;Название единицы {j + 1}: &quot;);
+                items[j] = new BaggageItem(itemName, ReadMass(&quot;Масса, кг: &quot;));
+            }
+
+            passengers[i] = new Passenger(name, items);
+        }
+
+        m = ReadMass(&quot;Порог m, кг: &quot;);
+    }
+
+    string path = DataPath(&quot;passengers.bin&quot;);
+    FileTasks.FillPassengers(path, passengers);
+    Console.WriteLine($&quot;Файл: {path}; XML-сериализация массива структур, затем чтение файла.&quot;);
+
+    foreach (Passenger passenger in FileTasks.ReadPassengers(path))
+    {
+        Console.Write($&quot;{passenger.Name}: {passenger.Items.Length} ед.&quot;);
+
+        foreach (BaggageItem item in passenger.Items)
+        {
+            Console.Write($&quot;; {item.Name} — {item.Mass} кг&quot;);
+        }
+
+        Console.WriteLine();
+    }
+
+    bool found = FileTasks.HasLightSingleBaggage(path, m);
+    Console.WriteLine($&quot;Одна единица багажа массой менее {m} кг: {(found ? &quot;Да&quot; : &quot;Нет&quot;)}&quot;);
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 5" src="screenshots/results/task5.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 5: отрицательная масса отклоняется. Для одного предмета массой 5 кг и m=5 результат «Нет»: неравенство строгое. Дроби принимаются с точкой или запятой.</p>
+<p><img alt="Ручная проверка задания 5" src="screenshots/results/manual5.png" /></p>
+<h1>Задание 6. Текстовые файлы: одно число в строке</h1>
+<h2>Задача 6.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>В текстовом файле целые числа записаны по одному в строке. Найти разность максимального и минимального элементов. Случайное заполнение — отдельным методом.</p>
+<h3>Класс и описание задачи</h3>
+<p>FillTextNumbers с perLine=1 заполняет исходный файл случайными числами. FindRange читает файл построчно, поддерживая минимум и максимум. Разность вычисляется в long, поэтому для int.MinValue и int.MaxValue получается 4294967295 без переполнения. Пустой файл отклоняется, для одного числа результат равен нулю.</p>
+<p><strong>Методы FileTasks</strong></p>
+<pre class="code"><code class="language-csharp">public static void FillTextNumbers(string path, int count, int perLine, Random random)
+{
+    ArgumentOutOfRangeException.ThrowIfNegative(count);
+    ArgumentOutOfRangeException.ThrowIfNegativeOrZero(perLine);
+    ArgumentNullException.ThrowIfNull(random);
+    using StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8);
+
+    for (int i = 0; i &lt; count; i++)
+    {
+        writer.Write(random.Next(-100, 101).ToString(CultureInfo.InvariantCulture));
+
+        if ((i + 1) % perLine == 0 || i == count - 1)
+        {
+            writer.WriteLine();
+        }
+        else
+        {
+            writer.Write(' ');
+        }
+    }
+}
+
+public static long FindRange(string path)
+{
+    using StreamReader reader = new StreamReader(path);
+    string? line = reader.ReadLine();
+
+    if (line is null)
+    {
+        throw new InvalidDataException(&quot;В файле нет чисел.&quot;);
+    }
+
+    int minimum = int.Parse(line, CultureInfo.InvariantCulture);
+    int maximum = minimum;
+
+    while ((line = reader.ReadLine()) is not null)
+    {
+        int value = int.Parse(line, CultureInfo.InvariantCulture);
+        minimum = Math.Min(minimum, value);
+        maximum = Math.Max(maximum, value);
+    }
+
+    return (long)maximum - minimum;
+}
+</code></pre>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunTextNumbers(int task, bool manual)
+{
+    int count = manual ? ConsoleInput.ReadInt(&quot;Количество чисел (1–100): &quot;, 1, 100) : 12;
+    int perLine = task == 6 ? 1 : 4;
+
+    if (manual &amp;&amp; task == 7)
+    {
+        perLine = ConsoleInput.ReadInt(&quot;Чисел в строке (2–10): &quot;, 2, 10);
+    }
+
+    string path = DataPath($&quot;task{task}.txt&quot;);
+    FileTasks.FillTextNumbers(path, count, perLine, new Random(3));
+    Console.WriteLine($&quot;Исходный файл: {path}&quot;);
+    Console.Write(File.ReadAllText(path));
+
+    if (task == 6)
+    {
+        Console.WriteLine($&quot;Максимум − минимум = {FileTasks.FindRange(path)}&quot;);
+    }
+    else
+    {
+        Console.WriteLine($&quot;Минимальный элемент = {FileTasks.FindMinimum(path)}&quot;);
+    }
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 6" src="screenshots/results/task6.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 6: файл из одного числа даёт разность 0.</p>
+<p><img alt="Ручная проверка задания 6" src="screenshots/results/manual6.png" /></p>
+<h1>Задание 7. Текстовые файлы: несколько чисел в строке</h1>
+<h2>Задача 7.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>В текстовом файле целые числа записаны по несколько в строке. Найти минимальный элемент. Случайное заполнение — отдельным методом.</p>
+<h3>Класс и описание задачи</h3>
+<p>FillTextNumbers записывает по четыре числа в строке в демонстрации; последняя строка может быть неполной. FindMinimum читает строки и разбивает их по пробельным символам. Пробелы, табуляции и пустые строки обрабатываются. При отсутствии чисел выдаётся ошибка. Используются обычные циклы, LINQ отсутствует.</p>
+<p><strong>Методы FileTasks</strong></p>
+<pre class="code"><code class="language-csharp">public static int FindMinimum(string path)
+{
+    int minimum = int.MaxValue;
+    bool found = false;
+
+    foreach (string line in File.ReadLines(path))
+    {
+        string[] tokens = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string token in tokens)
+        {
+            minimum = Math.Min(minimum, int.Parse(token, CultureInfo.InvariantCulture));
+            found = true;
+        }
+    }
+
+    if (!found)
+    {
+        throw new InvalidDataException(&quot;В файле нет чисел.&quot;);
+    }
+
+    return minimum;
+}
+</code></pre>
+<p>Метод заполнения FillTextNumbers приведён в задании 6; здесь perLine &gt; 1.</p>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunTextNumbers(int task, bool manual)
+{
+    int count = manual ? ConsoleInput.ReadInt(&quot;Количество чисел (1–100): &quot;, 1, 100) : 12;
+    int perLine = task == 6 ? 1 : 4;
+
+    if (manual &amp;&amp; task == 7)
+    {
+        perLine = ConsoleInput.ReadInt(&quot;Чисел в строке (2–10): &quot;, 2, 10);
+    }
+
+    string path = DataPath($&quot;task{task}.txt&quot;);
+    FileTasks.FillTextNumbers(path, count, perLine, new Random(3));
+    Console.WriteLine($&quot;Исходный файл: {path}&quot;);
+    Console.Write(File.ReadAllText(path));
+
+    if (task == 6)
+    {
+        Console.WriteLine($&quot;Максимум − минимум = {FileTasks.FindRange(path)}&quot;);
+    }
+    else
+    {
+        Console.WriteLine($&quot;Минимальный элемент = {FileTasks.FindMinimum(path)}&quot;);
+    }
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 7" src="screenshots/results/task7.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 7: пять чисел при двух числах в строке образуют неполную последнюю строку; минимум находится среди всех строк.</p>
+<p><img alt="Ручная проверка задания 7" src="screenshots/results/manual7.png" /></p>
+<h1>Задание 8. Текстовый файл</h1>
+<h2>Задача 8.3. Вариант 3</h2>
+<h3>Условие</h3>
+<p>Переписать в другой файл строки, начинающиеся с заданного символа.</p>
+<h3>Класс и описание задачи</h3>
+<p>FilterLines последовательно читает UTF-8 текст. Непустая строка проходит фильтр, если первый символ равен заданному. Регистр учитывается, пробелы в начале не удаляются. Порядок подходящих строк сохраняется. При отсутствии совпадений создаётся пустой выходной файл. Исходный и выходной пути должны различаться.</p>
+<p><strong>Методы FileTasks</strong></p>
+<pre class="code"><code class="language-csharp">public static void FilterLines(string source, string destination, char firstCharacter)
+{
+    ValidateDifferentPaths(source, destination);
+    using StreamReader reader = new StreamReader(source);
+    using StreamWriter writer = new StreamWriter(destination, false, Encoding.UTF8);
+    string? line;
+
+    while ((line = reader.ReadLine()) is not null)
+    {
+        if (line.Length &gt; 0 &amp;&amp; line[0] == firstCharacter)
+        {
+            writer.WriteLine(line);
+        }
+    }
+}
+</code></pre>
+<p>Общий метод ValidateDifferentPaths приведён в задании 4.</p>
+<h3>Код примера</h3>
+<p><strong>Вызов из Lab3</strong></p>
+<pre class="code"><code class="language-csharp">private static void RunTextLines(bool manual)
+{
+    string[] lines = { &quot;Багаж готов&quot;, &quot;билет куплен&quot;, &quot;&quot;, &quot;Борис в пути&quot;, &quot; Буква после пробела&quot;, &quot;Анна дома&quot; };
+    char firstCharacter = 'Б';
+
+    if (manual)
+    {
+        string symbol;
+
+        do
+        {
+            Console.Write(&quot;Начальный символ (ровно один, пробел допустим): &quot;);
+            symbol = Console.ReadLine() ?? throw new EndOfStreamException();
+
+            if (symbol.Length != 1)
+            {
+                Console.WriteLine(&quot;Введите ровно один символ.&quot;);
+            }
+        }
+        while (symbol.Length != 1);
+
+        firstCharacter = symbol[0];
+        int count = ConsoleInput.ReadInt(&quot;Количество строк (0–30): &quot;, 0, 30);
+        lines = new string[count];
+
+        for (int i = 0; i &lt; count; i++)
+        {
+            Console.Write($&quot;Строка {i + 1}: &quot;);
+            lines[i] = Console.ReadLine() ?? throw new EndOfStreamException();
+        }
+    }
+
+    string source = DataPath(&quot;lines.txt&quot;);
+    string destination = DataPath(&quot;selected_lines.txt&quot;);
+    File.WriteAllLines(source, lines, Encoding.UTF8);
+    FileTasks.FilterLines(source, destination, firstCharacter);
+    Console.WriteLine($&quot;Исходный файл: {source}&quot;);
+    Console.Write(File.ReadAllText(source));
+    Console.WriteLine($&quot;Строки на символ «{firstCharacter}», с учётом регистра: {destination}&quot;);
+    string result = File.ReadAllText(destination);
+    Console.WriteLine(result.Length == 0 ? &quot;(пусто)&quot; : result);
+}
+</code></pre>
+<h3>Результат</h3>
+<p><img alt="Результат задания 8" src="screenshots/results/task8.png" /></p>
+<h3>Ручной ввод и проверка</h3>
+<p>Пункт 9 → 8: из строк «Багаж», «багаж», пустой строки, « Багаж» и «Билет» на символ «Б» выбираются только «Багаж» и «Билет».</p>
+<p><img alt="Ручная проверка задания 8" src="screenshots/results/manual8.png" /></p>
+<h1>Проверка интерфейса и граничных случаев</h1>
+<p>Неверные пункты меню вызывают повторный запрос. Завершение потока ввода корректно завершает программу. В ручном режиме проверяются размеры матриц, ненулевые делители, положительная масса, количество объектов и длина символа.</p>
+<p><img alt="Ошибки меню" src="screenshots/results/error_menu.png" /></p>
+<p><img alt="Завершение ввода" src="screenshots/results/error_eof.png" /></p>
+<h1>Вывод</h1>
+<p>Реализованы восемь задач варианта 3. Использованы двумерный массив, конструкторы, перегрузка операторов, структуры, бинарные и текстовые потоки, XML-сериализация. Сборка проходит без ошибок и предупреждений. Результат задания 3 подтверждён настоящим снимком онлайн-калькулятора MatrixCalc.</p>
+<p>Запуск: <code>dotnet run --project CSharpLabs/CSharpLabs.csproj</code>, затем пункт 3.</p>
+<p>Исходное задание: <a href="lab3_csharp.pdf">lab3_csharp.pdf</a>.</p></body></html>
