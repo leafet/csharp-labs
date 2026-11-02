@@ -1,4 +1,3 @@
-using System.Text;
 using CSharpLabs.Lab3.Common;
 
 namespace CSharpLabs.Lab3.Tasks;
@@ -15,12 +14,19 @@ internal static class Task8
     {
         string source = Lab3Files.GetDataPath("lines.txt");
         string destination = Lab3Files.GetDataPath("selected_lines.txt");
-        File.WriteAllLines(source, lines, Encoding.UTF8);
+        FileTasks.FillTextLines(source, lines);
         FileTasks.FilterLines(source, destination, firstCharacter);
         Console.WriteLine($"Исходный файл: {source}");
-        Console.Write(File.ReadAllText(source));
+        Console.Write(FileTasks.ReadText(source));
         Console.WriteLine($"Строки на символ «{firstCharacter}», с учётом регистра: {destination}");
-        string result = File.ReadAllText(destination);
-        Console.WriteLine(result.Length == 0 ? "(пусто)" : result);
+        string result = FileTasks.ReadText(destination);
+        if (result.Length == 0)
+        {
+            Console.WriteLine("(пусто)");
+        }
+        else
+        {
+            Console.WriteLine(result);
+        }
     }
 }

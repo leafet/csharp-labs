@@ -34,6 +34,17 @@ internal static class Task5
         }
 
         bool found = FileTasks.HasLightSingleBaggage(path, m);
-        Console.WriteLine($"Одна единица багажа массой менее {m} кг: {(found ? "Да" : "Нет")}");
+        string answer;
+
+        if (found)
+        {
+            answer = "Да";
+        }
+        else
+        {
+            answer = "Нет";
+        }
+
+        Console.WriteLine($"Одна единица багажа массой менее {m} кг: {answer}");
     }
 }

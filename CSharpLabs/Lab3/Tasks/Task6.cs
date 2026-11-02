@@ -14,7 +14,7 @@ internal static class Task6
         string path = Lab3Files.GetDataPath("task6.txt");
         FileTasks.FillTextNumbers(path, count, 1, random ?? Random.Shared);
         Console.WriteLine($"Исходный файл: {path}");
-        Console.Write(File.ReadAllText(path));
+        Console.Write(FileTasks.ReadText(path));
 
         Console.WriteLine($"Максимум − минимум = {FileTasks.FindRange(path)}");
     }

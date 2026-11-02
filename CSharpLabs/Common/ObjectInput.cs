@@ -69,14 +69,26 @@ internal static class ObjectInput
 
         if (nameType == 1)
         {
-            return father is null
-                ? new Person(fullName.Name, height)
-                : new Person(fullName.Name, height, father);
+            if (father is null)
+            {
+                return new Person(fullName.Name, height);
+            }
+            else
+            {
+                return new Person(fullName.Name, height, father);
+            }
         }
-
-        return father is null
-            ? new Person(fullName, height)
-            : new Person(fullName, height, father);
+        else
+        {
+            if (father is null)
+            {
+                return new Person(fullName, height);
+            }
+            else
+            {
+                return new Person(fullName, height, father);
+            }
+        }
     }
 
     public static City[] ReadCities()

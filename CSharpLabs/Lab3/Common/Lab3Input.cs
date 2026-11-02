@@ -32,12 +32,29 @@ internal static class Lab3Input
                 break;
             case 6:
             case 7:
-                int minimumCount = task == 6 ? 1 : 2;
+                int minimumCount;
+
+                if (task == 6)
+                {
+                    minimumCount = 1;
+                }
+                else
+                {
+                    minimumCount = 2;
+                }
                 int numberCount = ConsoleInput.ReadInt($"Количество чисел ({minimumCount}–100): ", minimumCount, 100);
                 int maximumPerLine = Math.Min(10, numberCount);
-                int perLine = task == 6
-                    ? 1
-                    : ConsoleInput.ReadInt($"Чисел в строке (2–{maximumPerLine}): ", 2, maximumPerLine);
+                int perLine;
+
+                if (task == 6)
+                {
+                    perLine = 1;
+                }
+                else
+                {
+                    perLine = ConsoleInput.ReadInt($"Чисел в строке (2–{maximumPerLine}): ", 2, maximumPerLine);
+                }
+
                 if (task == 6)
                 {
                     Task6.Run(numberCount);
@@ -168,9 +185,14 @@ internal static class Lab3Input
                 return value;
             }
 
-            Console.WriteLine(requirePositive
-                ? "Введите положительную массу; дробную часть отделите точкой или запятой."
-                : "Введите число; дробную часть отделите точкой или запятой.");
+            if (requirePositive)
+            {
+                Console.WriteLine("Введите положительную массу; дробную часть отделите точкой или запятой.");
+            }
+            else
+            {
+                Console.WriteLine("Введите число; дробную часть отделите точкой или запятой.");
+            }
         }
     }
 }

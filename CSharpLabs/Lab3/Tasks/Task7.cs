@@ -18,7 +18,7 @@ internal static class Task7
         string path = Lab3Files.GetDataPath("task7.txt");
         FileTasks.FillTextNumbers(path, count, perLine, random ?? Random.Shared);
         Console.WriteLine($"Исходный файл: {path}");
-        Console.Write(File.ReadAllText(path));
+        Console.Write(FileTasks.ReadText(path));
 
         Console.WriteLine($"Минимальный элемент = {FileTasks.FindMinimum(path)}");
     }

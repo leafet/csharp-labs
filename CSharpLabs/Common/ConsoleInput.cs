@@ -93,6 +93,13 @@ internal static class ConsoleInput
 
         string text = input.Trim();
 
-        return text.Length == 0 ? null : text;
+        if (text.Length == 0)
+        {
+            return null;
+        }
+        else
+        {
+            return text;
+        }
     }
 }

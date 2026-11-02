@@ -70,7 +70,14 @@ public static class FileTasks
             result.Append(reader.ReadInt32());
         }
 
-        return result.Length == 0 ? "(пусто)" : result.ToString();
+        if (result.Length == 0)
+        {
+            return "(пусто)";
+        }
+        else
+        {
+            return result.ToString();
+        }
     }
 
     /// <summary>Формат контейнера: длина XML (Int32), затем байты XML в UTF-8.</summary>
@@ -145,9 +152,26 @@ public static class FileTasks
         }
     }
 
+    public static void FillTextLines(string path, string[] lines)
+    {
+        ArgumentNullException.ThrowIfNull(lines);
+        using StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8);
+
+        foreach (string line in lines)
+        {
+            writer.WriteLine(line);
+        }
+    }
+
+    public static string ReadText(string path)
+    {
+        using StreamReader reader = new StreamReader(path, Encoding.UTF8);
+        return reader.ReadToEnd();
+    }
+
     public static long FindRange(string path)
     {
-        using StreamReader reader = new StreamReader(path);
+        using StreamReader reader = new StreamReader(path, Encoding.UTF8);
         string? line = reader.ReadLine();
 
         if (line is null)
@@ -171,11 +195,13 @@ public static class FileTasks
 
     public static int FindMinimum(string path)
     {
+        using StreamReader reader = new StreamReader(path, Encoding.UTF8);
         int minimum = int.MaxValue;
         bool found = false;
         string[] tokens;
+        string? line;
 
-        foreach (string line in File.ReadLines(path))
+        while ((line = reader.ReadLine()) is not null)
         {
             tokens = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
 
@@ -197,7 +223,7 @@ public static class FileTasks
     public static void FilterLines(string source, string destination, char firstCharacter)
     {
         ValidateDifferentPaths(source, destination);
-        using StreamReader reader = new StreamReader(source);
+        using StreamReader reader = new StreamReader(source, Encoding.UTF8);
         using StreamWriter writer = new StreamWriter(destination, false, Encoding.UTF8);
         string? line;
 

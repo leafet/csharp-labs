@@ -34,9 +34,14 @@ public class Matrix
         {
             for (int column = 0; column < size; column++)
             {
-                _values[row, column] = row + column < size - 1
-                    ? random.Next(-12, 4566)
-                    : random.Next(-1024, 1025);
+                if (row + column < size - 1)
+                {
+                    _values[row, column] = random.Next(-12, 4566);
+                }
+                else
+                {
+                    _values[row, column] = random.Next(-1024, 1025);
+                }
             }
         }
     }
