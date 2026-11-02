@@ -72,16 +72,20 @@ internal static class Lab3Input
     {
         int count = ConsoleInput.ReadInt("Количество пассажиров (0–20): ", 0, 20);
         Passenger[] passengers = new Passenger[count];
+        string name;
+        int itemsCount;
+        BaggageItem[] items;
+        string itemName;
 
         for (int i = 0; i < count; i++)
         {
-            string name = ConsoleInput.ReadRequiredText($"Имя пассажира {i + 1}: ");
-            int itemsCount = ConsoleInput.ReadInt("Количество единиц багажа (0–20): ", 0, 20);
-            BaggageItem[] items = new BaggageItem[itemsCount];
+            name = ConsoleInput.ReadRequiredText($"Имя пассажира {i + 1}: ");
+            itemsCount = ConsoleInput.ReadInt("Количество единиц багажа (0–20): ", 0, 20);
+            items = new BaggageItem[itemsCount];
 
             for (int j = 0; j < itemsCount; j++)
             {
-                string itemName = ConsoleInput.ReadRequiredText($"Название единицы {j + 1}: ");
+                itemName = ConsoleInput.ReadRequiredText($"Название единицы {j + 1}: ");
                 items[j] = new BaggageItem(itemName, ReadMass("Масса, кг: "));
             }
 
@@ -134,9 +138,11 @@ internal static class Lab3Input
 
     private static int ReadNonzero(string prompt)
     {
+        int value;
+
         while (true)
         {
-            int value = ConsoleInput.ReadInt(prompt, int.MinValue, int.MaxValue);
+            value = ConsoleInput.ReadInt(prompt, int.MinValue, int.MaxValue);
 
             if (value != 0)
             {
@@ -149,12 +155,15 @@ internal static class Lab3Input
 
     private static decimal ReadMass(string prompt, bool requirePositive = true)
     {
+        string text;
+        decimal value;
+
         while (true)
         {
-            string text = ConsoleInput.ReadRequiredText(prompt).Replace(',', '.');
+            text = ConsoleInput.ReadRequiredText(prompt).Replace(',', '.');
 
             if (decimal.TryParse(text, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture, out decimal value) && (!requirePositive || value > 0))
+                CultureInfo.InvariantCulture, out value) && (!requirePositive || value > 0))
             {
                 return value;
             }

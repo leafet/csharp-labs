@@ -42,17 +42,20 @@ internal static class ConsoleInput
 
     public static int ReadInt(string prompt, int minimum, int maximum)
     {
+        string? input;
+        int result;
+
         while (true)
         {
             Console.Write(prompt);
-            string? input = Console.ReadLine();
+            input = Console.ReadLine();
 
             if (input is null)
             {
                 throw new EndOfStreamException();
             }
 
-            if (int.TryParse(input, out int result) && result >= minimum && result <= maximum)
+            if (int.TryParse(input, out result) && result >= minimum && result <= maximum)
             {
                 return result;
             }
@@ -63,9 +66,11 @@ internal static class ConsoleInput
 
     public static string ReadRequiredText(string prompt)
     {
+        string? text;
+
         while (true)
         {
-            string? text = ReadOptionalText(prompt);
+            text = ReadOptionalText(prompt);
 
             if (text is not null)
             {

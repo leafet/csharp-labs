@@ -101,12 +101,13 @@ public class Matrix
         top = 0;
         left = 0;
         sum = long.MinValue;
+        long current;
 
         for (int row = 0; row <= Rows - 3; row++)
         {
             for (int column = 0; column <= Columns - 3; column++)
             {
-                long current = 0;
+                current = 0;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -207,6 +208,7 @@ public class Matrix
         }
 
         StringBuilder result = new StringBuilder();
+        string formattedValue;
 
         for (int row = 0; row < Rows; row++)
         {
@@ -217,8 +219,8 @@ public class Matrix
                     result.Append(' ');
                 }
 
-                string value = _values[row, column].ToString(CultureInfo.InvariantCulture);
-                result.Append(value.PadLeft(width));
+                formattedValue = _values[row, column].ToString(CultureInfo.InvariantCulture);
+                result.Append(formattedValue.PadLeft(width));
             }
 
             if (row < Rows - 1)

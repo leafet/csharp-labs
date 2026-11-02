@@ -12,6 +12,8 @@ public static class Program
     {
         try
         {
+            int choice;
+
             while (true)
             {
                 ConsoleInput.ClearScreen();
@@ -20,7 +22,7 @@ public static class Program
                 Console.WriteLine("3 — Лабораторная работа №3, вариант 3");
                 Console.WriteLine("0 — Выход");
 
-                int choice = ConsoleInput.ReadInt("Выберите лабораторную работу: ", 0, 3);
+                choice = ConsoleInput.ReadInt("Выберите лабораторную работу: ", 0, 3);
 
                 switch (choice)
                 {

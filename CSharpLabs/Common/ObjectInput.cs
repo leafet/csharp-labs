@@ -9,11 +9,15 @@ internal static class ObjectInput
 {
     public static PersonFullName ReadFullName()
     {
+        string? name;
+        string? secondName;
+        string? patronymic;
+
         while (true)
         {
-            string? name = ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): ");
-            string? secondName = ConsoleInput.ReadOptionalText("Фамилия (Enter — пропустить): ");
-            string? patronymic = ConsoleInput.ReadOptionalText("Отчество (Enter — пропустить): ");
+            name = ConsoleInput.ReadOptionalText("Имя (Enter — пропустить): ");
+            secondName = ConsoleInput.ReadOptionalText("Фамилия (Enter — пропустить): ");
+            patronymic = ConsoleInput.ReadOptionalText("Отчество (Enter — пропустить): ");
 
             if (name is null && secondName is null && patronymic is null)
             {
@@ -79,23 +83,28 @@ internal static class ObjectInput
     {
         int count = ConsoleInput.ReadInt("Количество городов (1–100): ", 1, 100);
         City[] cities = new City[count];
+        string name;
+        int routeCount;
+        bool[] destinations;
+        int destination;
+        int cost;
 
         for (int i = 0; i < cities.Length; i++)
         {
-            string name = ConsoleInput.ReadRequiredText($"Название города №{i + 1}: ");
+            name = ConsoleInput.ReadRequiredText($"Название города №{i + 1}: ");
             cities[i] = new City(name);
         }
 
         for (int i = 0; i < cities.Length; i++)
         {
             Console.WriteLine($"Исходящие пути из города №{i + 1} ({cities[i].Name}):");
-            int routeCount = ConsoleInput.ReadInt("Количество путей: ", 0, count - 1);
-            bool[] destinations = new bool[count];
+            routeCount = ConsoleInput.ReadInt("Количество путей: ", 0, count - 1);
+            destinations = new bool[count];
 
             for (int j = 0; j < routeCount; j++)
             {
-                int destination = ReadDestination(cities, i, destinations);
-                int cost = ConsoleInput.ReadInt("Стоимость поездки: ", 1, int.MaxValue);
+                destination = ReadDestination(cities, i, destinations);
+                cost = ConsoleInput.ReadInt("Стоимость поездки: ", 1, int.MaxValue);
 
                 cities[i].AddRoute(cities[destination], cost);
                 destinations[destination] = true;
@@ -115,9 +124,11 @@ internal static class ObjectInput
             }
         }
 
+        int destination;
+
         while (true)
         {
-            int destination = ConsoleInput.ReadInt("Номер города назначения: ", 1, cities.Length) - 1;
+            destination = ConsoleInput.ReadInt("Номер города назначения: ", 1, cities.Length) - 1;
 
             if (destination == source)
             {

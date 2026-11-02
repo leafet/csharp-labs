@@ -35,10 +35,11 @@ public static class FileTasks
         }
 
         using BinaryWriter writer = new BinaryWriter(File.Create(destination));
+        int value;
 
         while (reader.BaseStream.Position < reader.BaseStream.Length)
         {
-            int value = reader.ReadInt32();
+            value = reader.ReadInt32();
 
             // Расширение до long исключает переполнение int.MinValue % -1.
             if ((long)value % m == 0 && (long)value % n != 0)
@@ -156,10 +157,11 @@ public static class FileTasks
 
         int minimum = int.Parse(line, CultureInfo.InvariantCulture);
         int maximum = minimum;
+        int value;
 
         while ((line = reader.ReadLine()) is not null)
         {
-            int value = int.Parse(line, CultureInfo.InvariantCulture);
+            value = int.Parse(line, CultureInfo.InvariantCulture);
             minimum = Math.Min(minimum, value);
             maximum = Math.Max(maximum, value);
         }
@@ -171,10 +173,11 @@ public static class FileTasks
     {
         int minimum = int.MaxValue;
         bool found = false;
+        string[] tokens;
 
         foreach (string line in File.ReadLines(path))
         {
-            string[] tokens = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
+            tokens = line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string token in tokens)
             {

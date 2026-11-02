@@ -8,6 +8,9 @@ public class Lab3
 {
     public void Run()
     {
+        int choice;
+        bool demonstration;
+
         while (true)
         {
             ConsoleInput.ClearScreen();
@@ -22,46 +25,51 @@ public class Lab3
             Console.WriteLine("8 — Строки, начинающиеся с заданного символа");
             Console.WriteLine("9 — Демонстрационные примеры с готовыми данными");
             Console.WriteLine("0 — Назад");
-            int choice = ConsoleInput.ReadInt("Выберите задание: ", 0, 9);
+            choice = ConsoleInput.ReadInt("Выберите задание: ", 0, 9);
 
             if (choice == 0)
             {
                 return;
             }
 
-            bool demonstration = choice == 9;
+            demonstration = choice == 9;
 
             if (demonstration)
             {
                 choice = ConsoleInput.ReadInt("Номер задания (1–8): ", 1, 8);
             }
 
-            try
-            {
-                RunTask(choice, demonstration);
-            }
-            catch (ArgumentException exception)
-            {
-                Console.WriteLine($"Ошибка данных: {exception.Message}");
-            }
-            catch (InvalidOperationException exception)
-            {
-                Console.WriteLine($"Ошибка обработки: {exception.Message}");
-            }
-            catch (IOException exception) when (exception is not EndOfStreamException)
-            {
-                Console.WriteLine($"Ошибка файла: {exception.Message}");
-            }
-            catch (UnauthorizedAccessException exception)
-            {
-                Console.WriteLine($"Нет доступа к файлу: {exception.Message}");
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine("Результат выходит за диапазон целого числа long.");
-            }
+            RunTaskSafely(choice, demonstration);
 
             ConsoleInput.WaitForContinue();
+        }
+    }
+
+    private static void RunTaskSafely(int choice, bool demonstration)
+    {
+        try
+        {
+            RunTask(choice, demonstration);
+        }
+        catch (ArgumentException exception)
+        {
+            Console.WriteLine($"Ошибка данных: {exception.Message}");
+        }
+        catch (InvalidOperationException exception)
+        {
+            Console.WriteLine($"Ошибка обработки: {exception.Message}");
+        }
+        catch (IOException exception) when (exception is not EndOfStreamException)
+        {
+            Console.WriteLine($"Ошибка файла: {exception.Message}");
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            Console.WriteLine($"Нет доступа к файлу: {exception.Message}");
+        }
+        catch (OverflowException)
+        {
+            Console.WriteLine("Результат выходит за диапазон целого числа long.");
         }
     }
 
