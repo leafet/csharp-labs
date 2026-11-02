@@ -1,3 +1,5 @@
+using CSharpLabs.Common;
+
 namespace CSharpLabs;
 
 // Единственная точка входа проекта: выбор лабораторной работы.

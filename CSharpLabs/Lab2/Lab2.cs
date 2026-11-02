@@ -1,3 +1,4 @@
+using CSharpLabs.Common;
 using CSharpLabs.Lab2.Task1_Names;
 using CSharpLabs.Lab2.Task2_People;
 using CSharpLabs.Lab2.Task3_Cities;

@@ -1,4 +1,4 @@
-namespace CSharpLabs;
+namespace CSharpLabs.Common;
 
 internal static class ConsoleInput
 {

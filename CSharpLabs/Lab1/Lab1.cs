@@ -1,3 +1,5 @@
+using CSharpLabs.Common;
+
 namespace CSharpLabs.Lab1;
 
 public class Lab1

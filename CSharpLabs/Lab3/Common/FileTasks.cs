@@ -2,12 +2,10 @@ using System.Globalization;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace CSharpLabs.Lab3;
+namespace CSharpLabs.Lab3.Common;
 
-/// <summary>Статические методы заданий 4–8 и заполнения исходных файлов.</summary>
 public static class FileTasks
 {
-    /// <summary>Записывает случайные Int32 в бинарный файл.</summary>
     public static void FillBinaryNumbers(string path, int count, Random random)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
@@ -20,7 +18,6 @@ public static class FileTasks
         }
     }
 
-    /// <summary>Сохраняет числа, кратные m и не кратные n, в исходном порядке.</summary>
     public static void FilterBinaryNumbers(string source, string destination, int m, int n)
     {
         ValidateDifferentPaths(source, destination);
@@ -51,10 +48,15 @@ public static class FileTasks
         }
     }
 
-    /// <summary>Показывает числовой бинарный файл в читаемом виде.</summary>
     public static string ReadBinaryNumbers(string path)
     {
         using BinaryReader reader = new BinaryReader(File.OpenRead(path));
+
+        if (reader.BaseStream.Length % sizeof(int) != 0)
+        {
+            throw new InvalidDataException("Бинарный файл должен содержать целые Int32.");
+        }
+
         StringBuilder result = new StringBuilder();
 
         while (reader.BaseStream.Position < reader.BaseStream.Length)
@@ -70,7 +72,7 @@ public static class FileTasks
         return result.Length == 0 ? "(пусто)" : result.ToString();
     }
 
-    /// <summary>XML-сериализует структуры и записывает XML в бинарный контейнер.</summary>
+    /// <summary>Формат контейнера: длина XML (Int32), затем байты XML в UTF-8.</summary>
     public static void FillPassengers(string path, Passenger[] passengers)
     {
         ArgumentNullException.ThrowIfNull(passengers);
@@ -83,10 +85,15 @@ public static class FileTasks
         writer.Write(data);
     }
 
-    /// <summary>Читает бинарный контейнер и десериализует XML в массив структур.</summary>
     public static Passenger[] ReadPassengers(string path)
     {
         using BinaryReader reader = new BinaryReader(File.OpenRead(path));
+
+        if (reader.BaseStream.Length < sizeof(int))
+        {
+            throw new InvalidDataException("В файле отсутствует заголовок длины XML.");
+        }
+
         int length = reader.ReadInt32();
 
         if (length < 0 || length != reader.BaseStream.Length - sizeof(int))
@@ -100,10 +107,8 @@ public static class FileTasks
             ?? throw new InvalidDataException("В файле нет массива пассажиров."));
     }
 
-    /// <summary>Проверяет наличие пассажира с одной единицей багажа массой строго меньше m.</summary>
     public static bool HasLightSingleBaggage(string path, decimal m)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(m);
         Passenger[] passengers = ReadPassengers(path);
 
         foreach (Passenger passenger in passengers)
@@ -117,7 +122,6 @@ public static class FileTasks
         return false;
     }
 
-    /// <summary>Заполняет текстовый файл случайными числами, по указанному количеству в строке.</summary>
     public static void FillTextNumbers(string path, int count, int perLine, Random random)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
@@ -140,7 +144,6 @@ public static class FileTasks
         }
     }
 
-    /// <summary>Находит разность максимального и минимального чисел, записанных по одному в строке.</summary>
     public static long FindRange(string path)
     {
         using StreamReader reader = new StreamReader(path);
@@ -164,7 +167,6 @@ public static class FileTasks
         return (long)maximum - minimum;
     }
 
-    /// <summary>Находит минимум среди чисел, разделённых пробельными символами.</summary>
     public static int FindMinimum(string path)
     {
         int minimum = int.MaxValue;
@@ -189,7 +191,6 @@ public static class FileTasks
         return minimum;
     }
 
-    /// <summary>Переписывает строки, начинающиеся с заданного символа, с учётом регистра.</summary>
     public static void FilterLines(string source, string destination, char firstCharacter)
     {
         ValidateDifferentPaths(source, destination);

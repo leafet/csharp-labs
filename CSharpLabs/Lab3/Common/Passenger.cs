@@ -1,12 +1,10 @@
-namespace CSharpLabs.Lab3;
+namespace CSharpLabs.Lab3.Common;
 
-/// <summary>Пассажир и массив единиц его багажа для XML-сериализации.</summary>
 public struct Passenger
 {
     private string? _name;
     private BaggageItem[]? _items;
 
-    /// <summary>Создаёт запись пассажира.</summary>
     public Passenger(string name, BaggageItem[] items)
     {
         _name = null;
@@ -15,7 +13,6 @@ public struct Passenger
         Items = items;
     }
 
-    /// <summary>Имя пассажира.</summary>
     public string Name
     {
         get
@@ -29,7 +26,6 @@ public struct Passenger
         }
     }
 
-    /// <summary>Массив единиц багажа; пустой массив означает отсутствие багажа.</summary>
     public BaggageItem[] Items
     {
         get

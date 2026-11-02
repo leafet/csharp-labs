@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text;
+using CSharpLabs.Common;
 
-namespace CSharpLabs.Lab3;
+namespace CSharpLabs.Lab3.Common;
 
-/// <summary>Целочисленная матрица и операции заданий 1–3.</summary>
 public class Matrix
 {
     private readonly long[,] _values;
@@ -24,7 +24,6 @@ public class Matrix
         }
     }
 
-    /// <summary>Заполняет квадратную матрицу случайными числами по условию.</summary>
     public Matrix(int size, Random random)
     {
         ValidateDimensions(size, size);
@@ -67,7 +66,6 @@ public class Matrix
         _values = (long[,])values.Clone();
     }
 
-    /// <summary>Количество строк.</summary>
     public int Rows
     {
         get
@@ -76,7 +74,6 @@ public class Matrix
         }
     }
 
-    /// <summary>Количество столбцов.</summary>
     public int Columns
     {
         get
@@ -85,7 +82,6 @@ public class Matrix
         }
     }
 
-    /// <summary>Возвращает элемент по индексам с нуля.</summary>
     public long this[int row, int column]
     {
         get
@@ -142,7 +138,6 @@ public class Matrix
         return new Matrix(block);
     }
 
-    /// <summary>Транспонирует матрицу.</summary>
     public Matrix Transpose()
     {
         long[,] result = new long[Columns, Rows];
@@ -158,7 +153,6 @@ public class Matrix
         return new Matrix(result);
     }
 
-    /// <summary>Складывает матрицы одинакового размера.</summary>
     public static Matrix operator +(Matrix first, Matrix second)
     {
         ArgumentNullException.ThrowIfNull(first);
@@ -182,7 +176,6 @@ public class Matrix
         return new Matrix(result);
     }
 
-    /// <summary>Умножает матрицу на целое число слева.</summary>
     public static Matrix operator *(long factor, Matrix matrix)
     {
         ArgumentNullException.ThrowIfNull(matrix);
@@ -199,13 +192,11 @@ public class Matrix
         return new Matrix(result);
     }
 
-    /// <summary>Умножает матрицу на целое число справа.</summary>
     public static Matrix operator *(Matrix matrix, long factor)
     {
         return factor * matrix;
     }
 
-    /// <summary>Возвращает таблицу с выравниванием элементов.</summary>
     public override string ToString()
     {
         int width = 1;
@@ -226,7 +217,8 @@ public class Matrix
                     result.Append(' ');
                 }
 
-                result.Append(_values[row, column].ToString(CultureInfo.InvariantCulture).PadLeft(width));
+                string value = _values[row, column].ToString(CultureInfo.InvariantCulture);
+                result.Append(value.PadLeft(width));
             }
 
             if (row < Rows - 1)
@@ -240,9 +232,7 @@ public class Matrix
 
     private static void ValidateDimensions(int rows, int columns)
     {
-        if (rows <= 0 || columns <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(rows), "Размеры матрицы должны быть положительными.");
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rows);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(columns);
     }
 }
