@@ -34,7 +34,7 @@ internal static class Task5
         }
 
         bool found = FileTasks.HasLightSingleBaggage(path, m);
-        string answer;
+        string answer = string.Empty;
 
         if (found)
         {

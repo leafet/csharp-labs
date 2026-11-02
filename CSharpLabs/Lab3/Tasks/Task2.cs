@@ -19,7 +19,10 @@ internal static class Task2
     {
         Console.WriteLine("Исходная матрица:");
         Console.WriteLine(matrix);
-        Matrix block = matrix.FindMaximumBlock(out int row, out int column, out long sum);
+        int row = 0;
+        int column = 0;
+        long sum = 0;
+        Matrix block = matrix.FindMaximumBlock(out row, out column, out sum);
         Console.WriteLine($"Начало блока: строка {row + 1}, столбец {column + 1}; сумма = {sum}.");
         Console.WriteLine(block);
     }

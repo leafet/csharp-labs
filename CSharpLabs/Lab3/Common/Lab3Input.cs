@@ -32,7 +32,7 @@ internal static class Lab3Input
                 break;
             case 6:
             case 7:
-                int minimumCount;
+                int minimumCount = 0;
 
                 if (task == 6)
                 {
@@ -44,7 +44,7 @@ internal static class Lab3Input
                 }
                 int numberCount = ConsoleInput.ReadInt($"Количество чисел ({minimumCount}–100): ", minimumCount, 100);
                 int maximumPerLine = Math.Min(10, numberCount);
-                int perLine;
+                int perLine = 0;
 
                 if (task == 6)
                 {
@@ -89,10 +89,10 @@ internal static class Lab3Input
     {
         int count = ConsoleInput.ReadInt("Количество пассажиров (0–20): ", 0, 20);
         Passenger[] passengers = new Passenger[count];
-        string name;
-        int itemsCount;
-        BaggageItem[] items;
-        string itemName;
+        string name = string.Empty;
+        int itemsCount = 0;
+        BaggageItem[] items = Array.Empty<BaggageItem>();
+        string itemName = string.Empty;
 
         for (int i = 0; i < count; i++)
         {
@@ -114,7 +114,7 @@ internal static class Lab3Input
 
     private static char ReadCharacter()
     {
-        string symbol;
+        string symbol = string.Empty;
 
         do
         {
@@ -155,7 +155,7 @@ internal static class Lab3Input
 
     private static int ReadNonzero(string prompt)
     {
-        int value;
+        int value = 0;
 
         while (true)
         {
@@ -172,8 +172,8 @@ internal static class Lab3Input
 
     private static decimal ReadMass(string prompt, bool requirePositive = true)
     {
-        string text;
-        decimal value;
+        string text = string.Empty;
+        decimal value = 0;
 
         while (true)
         {

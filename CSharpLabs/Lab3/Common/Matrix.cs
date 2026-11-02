@@ -106,7 +106,7 @@ public class Matrix
         top = 0;
         left = 0;
         sum = long.MinValue;
-        long current;
+        long current = 0;
 
         for (int row = 0; row <= Rows - 3; row++)
         {
@@ -213,7 +213,7 @@ public class Matrix
         }
 
         StringBuilder result = new StringBuilder();
-        string formattedValue;
+        string formattedValue = string.Empty;
 
         for (int row = 0; row < Rows; row++)
         {

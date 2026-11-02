@@ -42,8 +42,8 @@ internal static class ConsoleInput
 
     public static int ReadInt(string prompt, int minimum, int maximum)
     {
-        string? input;
-        int result;
+        string? input = null;
+        int result = 0;
 
         while (true)
         {
@@ -66,7 +66,7 @@ internal static class ConsoleInput
 
     public static string ReadRequiredText(string prompt)
     {
-        string? text;
+        string? text = null;
 
         while (true)
         {

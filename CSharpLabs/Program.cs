@@ -12,7 +12,7 @@ public static class Program
     {
         try
         {
-            int choice;
+            int choice = 0;
 
             while (true)
             {

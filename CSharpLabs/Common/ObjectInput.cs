@@ -9,9 +9,9 @@ internal static class ObjectInput
 {
     public static PersonFullName ReadFullName()
     {
-        string? name;
-        string? secondName;
-        string? patronymic;
+        string? name = null;
+        string? secondName = null;
+        string? patronymic = null;
 
         while (true)
         {
@@ -43,7 +43,7 @@ internal static class ObjectInput
     {
         Console.WriteLine("1 — Строковое имя; 2 — Объект ФИО");
         int nameType = ConsoleInput.ReadInt("Способ задания имени: ", 1, 2);
-        PersonFullName fullName;
+        PersonFullName? fullName = null;
 
         if (nameType == 1)
         {
@@ -95,11 +95,11 @@ internal static class ObjectInput
     {
         int count = ConsoleInput.ReadInt("Количество городов (1–100): ", 1, 100);
         City[] cities = new City[count];
-        string name;
-        int routeCount;
-        bool[] destinations;
-        int destination;
-        int cost;
+        string name = string.Empty;
+        int routeCount = 0;
+        bool[] destinations = Array.Empty<bool>();
+        int destination = 0;
+        int cost = 0;
 
         for (int i = 0; i < cities.Length; i++)
         {
@@ -136,7 +136,7 @@ internal static class ObjectInput
             }
         }
 
-        int destination;
+        int destination = 0;
 
         while (true)
         {

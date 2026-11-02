@@ -35,7 +35,7 @@ public static class FileTasks
         }
 
         using BinaryWriter writer = new BinaryWriter(File.Create(destination));
-        int value;
+        int value = 0;
 
         while (reader.BaseStream.Position < reader.BaseStream.Length)
         {
@@ -181,7 +181,7 @@ public static class FileTasks
 
         int minimum = int.Parse(line, CultureInfo.InvariantCulture);
         int maximum = minimum;
-        int value;
+        int value = 0;
 
         while ((line = reader.ReadLine()) is not null)
         {
@@ -198,8 +198,8 @@ public static class FileTasks
         using StreamReader reader = new StreamReader(path, Encoding.UTF8);
         int minimum = int.MaxValue;
         bool found = false;
-        string[] tokens;
-        string? line;
+        string[] tokens = Array.Empty<string>();
+        string? line = null;
 
         while ((line = reader.ReadLine()) is not null)
         {
@@ -225,7 +225,7 @@ public static class FileTasks
         ValidateDifferentPaths(source, destination);
         using StreamReader reader = new StreamReader(source, Encoding.UTF8);
         using StreamWriter writer = new StreamWriter(destination, false, Encoding.UTF8);
-        string? line;
+        string? line = null;
 
         while ((line = reader.ReadLine()) is not null)
         {

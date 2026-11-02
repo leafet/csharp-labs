@@ -8,8 +8,8 @@ public class Lab3
 {
     public void Run()
     {
-        int choice;
-        bool demonstration;
+        int choice = 0;
+        bool demonstration = false;
 
         while (true)
         {
