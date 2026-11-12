@@ -8,6 +8,7 @@ namespace CSharpLabs.Lab4;
 public static class CollectionTasks
 {
     private const string RussianConsonants = "бвгджзйклмнпрстфхцчшщ";
+    private const int MaximumTotalScore = 40;
 
     public static void MergeSortedLists(List<int> first, List<int> second)
     {
@@ -17,29 +18,33 @@ public static class CollectionTasks
         }
 
         List<int> merged = new List<int>(first.Count + second.Count);
-        int i = 0;
-        int j = 0;
+        int firstIndex = 0;
+        int secondIndex = 0;
 
-        while (i < first.Count && j < second.Count)
+        while (firstIndex < first.Count && secondIndex < second.Count)
         {
-            if (first[i] <= second[j])
+            if (first[firstIndex] <= second[secondIndex])
             {
-                merged.Add(first[i++]);
+                merged.Add(first[firstIndex]);
+                firstIndex++;
             }
             else
             {
-                merged.Add(second[j++]);
+                merged.Add(second[secondIndex]);
+                secondIndex++;
             }
         }
 
-        while (i < first.Count)
+        while (firstIndex < first.Count)
         {
-            merged.Add(first[i++]);
+            merged.Add(first[firstIndex]);
+            firstIndex++;
         }
 
-        while (j < second.Count)
+        while (secondIndex < second.Count)
         {
-            merged.Add(second[j++]);
+            merged.Add(second[secondIndex]);
+            secondIndex++;
         }
 
         first.Clear();
@@ -68,18 +73,30 @@ public static class CollectionTasks
         IReadOnlyList<string> menu, IReadOnlyList<HashSet<string>> orders)
     {
         StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-        HashSet<string> allOrdered = new HashSet<string>(menu, comparer);
-        HashSet<string> anyOrdered = new HashSet<string>(comparer);
-        HashSet<string> seen = new HashSet<string>(comparer);
+        HashSet<string> orderedByAll = new HashSet<string>(menu, comparer);
+        HashSet<string> orderedByAnyone = new HashSet<string>(comparer);
         List<string> all = new List<string>();
         List<string> some = new List<string>();
         List<string> none = new List<string>();
 
         foreach (HashSet<string> order in orders)
         {
-            allOrdered.IntersectWith(order);
-            anyOrdered.UnionWith(order);
+            orderedByAll.IntersectWith(order);
+            orderedByAnyone.UnionWith(order);
         }
+
+        if (orders.Count == 0)
+        {
+            orderedByAll.Clear();
+        }
+
+        HashSet<string> orderedBySome = new HashSet<string>(orderedByAnyone, comparer);
+        orderedBySome.ExceptWith(orderedByAll);
+
+        HashSet<string> orderedByNone = new HashSet<string>(menu, comparer);
+        orderedByNone.ExceptWith(orderedByAnyone);
+
+        HashSet<string> seen = new HashSet<string>(comparer);
 
         foreach (string dish in menu)
         {
@@ -88,17 +105,17 @@ public static class CollectionTasks
                 continue;
             }
 
-            if (!anyOrdered.Contains(dish))
-            {
-                none.Add(dish);
-            }
-            else if (allOrdered.Contains(dish))
+            if (orderedByAll.Contains(dish))
             {
                 all.Add(dish);
             }
-            else
+            else if (orderedBySome.Contains(dish))
             {
                 some.Add(dish);
+            }
+            else if (orderedByNone.Contains(dish))
+            {
+                none.Add(dish);
             }
         }
 
@@ -108,29 +125,30 @@ public static class CollectionTasks
     public static string FindConsonantsInOneWord(string path)
     {
         using StreamReader reader = OpenInputFile(path);
-        HashSet<char> seen = new HashSet<char>();
+        HashSet<char> seenInAnyWord = new HashSet<char>();
         HashSet<char> seenInSeveralWords = new HashSet<char>();
-        HashSet<char> wordLetters = new HashSet<char>();
+        HashSet<char> lettersInCurrentWord = new HashSet<char>();
         StringBuilder result = new StringBuilder();
-        string? line = null;
+
+        string? line;
 
         while ((line = reader.ReadLine()) is not null)
         {
             foreach (Match word in Regex.Matches(line.ToLowerInvariant(), "[а-яё]+"))
             {
-                wordLetters.Clear();
+                lettersInCurrentWord.Clear();
 
                 foreach (char letter in word.Value)
                 {
                     if (RussianConsonants.Contains(letter))
                     {
-                        wordLetters.Add(letter);
+                        lettersInCurrentWord.Add(letter);
                     }
                 }
 
-                foreach (char letter in wordLetters)
+                foreach (char letter in lettersInCurrentWord)
                 {
-                    if (!seen.Add(letter))
+                    if (!seenInAnyWord.Add(letter))
                     {
                         seenInSeveralWords.Add(letter);
                     }
@@ -138,11 +156,11 @@ public static class CollectionTasks
             }
         }
 
-        seen.ExceptWith(seenInSeveralWords);
+        seenInAnyWord.ExceptWith(seenInSeveralWords);
 
         foreach (char letter in RussianConsonants)
         {
-            if (seen.Contains(letter))
+            if (seenInAnyWord.Contains(letter))
             {
                 result.Append(letter);
             }
@@ -175,10 +193,7 @@ public static class CollectionTasks
         using StreamReader reader = OpenInputFile(path);
         Dictionary<int, List<string>> standings = new Dictionary<int, List<string>>();
         List<string> winners = new List<string>();
-        List<string>? tied = null;
-        string? line = null;
-        string name = string.Empty;
-        int total = 0;
+        string? line;
 
         if (!int.TryParse(reader.ReadLine(), NumberStyles.None, CultureInfo.InvariantCulture, out int count))
         {
@@ -190,9 +205,9 @@ public static class CollectionTasks
         for (int i = 0; i < count; i++)
         {
             line = reader.ReadLine() ?? throw new InvalidDataException($"Отсутствует строка участника №{i + 1}.");
-            (name, total) = ParseParticipant(line);
+            (string name, int total) = ParseParticipant(line);
 
-            if (!standings.TryGetValue(total, out tied))
+            if (!standings.TryGetValue(total, out List<string>? tied))
             {
                 tied = new List<string>();
                 standings.Add(total, tied);
@@ -210,9 +225,9 @@ public static class CollectionTasks
         }
 
         // Сумма четырёх оценок лежит в диапазоне 0–40: сортировка не нужна.
-        for (int score = 40; score >= 0 && winners.Count < 3; score--)
+        for (int score = MaximumTotalScore; score >= 0 && winners.Count < 3; score--)
         {
-            if (standings.TryGetValue(score, out tied))
+            if (standings.TryGetValue(score, out List<string>? tied))
             {
                 winners.AddRange(tied);
             }

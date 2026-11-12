@@ -39,8 +39,7 @@ internal static class Lab4
                     RunTask(choice, false);
                 }
             }
-            catch (Exception error) when (error is ArgumentException or InvalidDataException or IOException or UnauthorizedAccessException
-                && error is not EndOfStreamException)
+            catch (Exception error) when (IsRecoverable(error))
             {
                 Console.WriteLine($"Ошибка: {error.Message}");
             }
@@ -56,18 +55,10 @@ internal static class Lab4
         switch (task)
         {
             case 1:
-                List<int> first = example ? new List<int> { -2, 1, 1, 5 } : ReadNumbers("L1", true);
-                List<int> second = example ? new List<int> { -3, 1, 4, 9 } : ReadNumbers("L2", true);
-                PrintGroup("L1", first);
-                PrintGroup("L2", second);
-                CollectionTasks.MergeSortedLists(first, second);
-                PrintGroup("После слияния", first);
+                RunSortedLists(example);
                 break;
             case 2:
-                LinkedList<int> list = example ? new LinkedList<int>(new[] { 1, 2, 1, 2, 1 })
-                    : new LinkedList<int>(ReadNumbers("L", false));
-                PrintGroup("L", list);
-                Console.WriteLine($"Количество элементов с равными соседями: {CollectionTasks.CountEqualNeighbors(list)}");
+                RunEqualNeighbors(example);
                 break;
             case 3:
                 RunCafe(example);
@@ -81,27 +72,52 @@ internal static class Lab4
         }
     }
 
+    private static void RunSortedLists(bool example)
+    {
+        List<int> first = example ? new List<int> { -2, 1, 1, 5 } : ReadNumbers("L1", true);
+        List<int> second = example ? new List<int> { -3, 1, 4, 9 } : ReadNumbers("L2", true);
+
+        PrintGroup("L1", first);
+        PrintGroup("L2", second);
+        CollectionTasks.MergeSortedLists(first, second);
+        PrintGroup("После слияния", first);
+    }
+
+    private static void RunEqualNeighbors(bool example)
+    {
+        LinkedList<int> list = example
+            ? new LinkedList<int>(new[] { 1, 2, 1, 2, 1 })
+            : new LinkedList<int>(ReadNumbers("L", false));
+
+        PrintGroup("L", list);
+        Console.WriteLine($"Количество элементов с равными соседями: {CollectionTasks.CountEqualNeighbors(list)}");
+    }
+
+    private static bool IsRecoverable(Exception error)
+    {
+        return error is not EndOfStreamException
+            && (error is ArgumentException or InvalidDataException or IOException or UnauthorizedAccessException);
+    }
+
     private static List<int> ReadNumbers(string name, bool sorted)
     {
-        string? line = null;
         List<int> numbers = new List<int>();
-        int value = 0;
-        bool valid = true;
 
         while (true)
         {
-            line = ConsoleInput.ReadOptionalText($"{name} через пробел (Enter — пустой список): ");
+            string? line = ConsoleInput.ReadOptionalText($"{name} через пробел (Enter — пустой список): ");
             numbers.Clear();
-            valid = true;
 
             if (line is null)
             {
                 return numbers;
             }
 
+            bool valid = true;
+
             foreach (string token in line.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries))
             {
-                if (!int.TryParse(token, out value) || (sorted && numbers.Count > 0 && value < numbers[^1]))
+                if (!int.TryParse(token, out int value) || (sorted && numbers.Count > 0 && value < numbers[^1]))
                 {
                     valid = false;
                     break;
@@ -122,56 +138,22 @@ internal static class Lab4
     private static void RunCafe(bool example)
     {
         StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-        List<string> menu = new List<string>();
-        HashSet<string> menuSet = new HashSet<string>(comparer);
-        List<HashSet<string>> orders = new List<HashSet<string>>();
-        string? line = null;
-        string dish = string.Empty;
-        HashSet<string> order;
+        List<string> menu;
+        List<HashSet<string>> orders;
 
         if (example)
         {
-            menu.AddRange(new[] { "Борщ", "Салат", "Компот" });
-            orders.Add(new HashSet<string>(comparer) { "Борщ", "Салат" });
-            orders.Add(new HashSet<string>(comparer) { "борщ" });
+            menu = new List<string> { "Борщ", "Салат", "Компот" };
+            orders = new List<HashSet<string>>
+            {
+                new HashSet<string>(comparer) { "Борщ", "Салат" },
+                new HashSet<string>(comparer) { "борщ" }
+            };
         }
         else
         {
-            int dishCount = ConsoleInput.ReadInt("Количество блюд: ", 1, 100);
-
-            while (menu.Count < dishCount)
-            {
-                dish = ConsoleInput.ReadRequiredText($"Блюдо №{menu.Count + 1}: ");
-
-                if (dish.Contains(';') || !menuSet.Add(dish))
-                {
-                    Console.WriteLine("Введите новое название без точки с запятой.");
-                    continue;
-                }
-
-                menu.Add(dish);
-            }
-
-            int visitorCount = ConsoleInput.ReadInt("Количество посетителей: ", 0, 100);
-
-            while (orders.Count < visitorCount)
-            {
-                line = ConsoleInput.ReadOptionalText($"Заказ №{orders.Count + 1} (блюда через «;», Enter — пустой): ");
-                order = new HashSet<string>(comparer);
-
-                if (line is not null)
-                {
-                    order.UnionWith(line.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
-                }
-
-                if (!order.IsSubsetOf(menuSet))
-                {
-                    Console.WriteLine("Заказывайте только блюда из меню.");
-                    continue;
-                }
-
-                orders.Add(order);
-            }
+            menu = ReadCafeMenu(comparer);
+            orders = ReadCafeOrders(new HashSet<string>(menu, comparer), comparer);
         }
 
         PrintGroup("Меню", menu);
@@ -185,6 +167,55 @@ internal static class Lab4
         PrintGroup("Заказывали все", all);
         PrintGroup("Заказывали только некоторые", some);
         PrintGroup("Никто не заказывал", none);
+    }
+
+    private static List<string> ReadCafeMenu(StringComparer comparer)
+    {
+        int dishCount = ConsoleInput.ReadInt("Количество блюд: ", 1, 100);
+        List<string> menu = new List<string>();
+        HashSet<string> knownDishes = new HashSet<string>(comparer);
+
+        while (menu.Count < dishCount)
+        {
+            string dish = ConsoleInput.ReadRequiredText($"Блюдо №{menu.Count + 1}: ");
+
+            if (dish.Contains(';') || !knownDishes.Add(dish))
+            {
+                Console.WriteLine("Введите новое название без точки с запятой.");
+                continue;
+            }
+
+            menu.Add(dish);
+        }
+
+        return menu;
+    }
+
+    private static List<HashSet<string>> ReadCafeOrders(HashSet<string> menu, StringComparer comparer)
+    {
+        int visitorCount = ConsoleInput.ReadInt("Количество посетителей: ", 0, 100);
+        List<HashSet<string>> orders = new List<HashSet<string>>();
+
+        while (orders.Count < visitorCount)
+        {
+            string? line = ConsoleInput.ReadOptionalText($"Заказ №{orders.Count + 1} (блюда через «;», Enter — пустой): ");
+            HashSet<string> order = new HashSet<string>(comparer);
+
+            if (line is not null)
+            {
+                order.UnionWith(line.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            if (!order.IsSubsetOf(menu))
+            {
+                Console.WriteLine("Заказывайте только блюда из меню.");
+                continue;
+            }
+
+            orders.Add(order);
+        }
+
+        return orders;
     }
 
     private static void RunConsonants(bool example)
@@ -225,29 +256,7 @@ internal static class Lab4
             return;
         }
 
-        List<string> participants = new List<string>();
-
-        if (example)
-        {
-            participants.AddRange(new[]
-            {
-                "Петров Сергей 9 9 5 7",
-                "Сидорова Анна 8 8 7 5",
-                "Иванова Мария 5 8 6 3",
-                "Смирнов Павел 4 6 4 8",
-                "Орлова Вера 1 2 3 4"
-            });
-        }
-        else
-        {
-            int count = ConsoleInput.ReadInt("Количество участников: ", 0, 100);
-            Console.WriteLine("Формат строки: Фамилия Имя Балл1 Балл2 Балл3 Балл4");
-
-            for (int i = 0; i < count; i++)
-            {
-                participants.Add(ConsoleInput.ReadRequiredText($"Участник №{i + 1}: "));
-            }
-        }
+        List<string> participants = example ? CreateExampleParticipants() : ReadParticipants();
 
         string path = Path.GetTempFileName();
 
@@ -266,6 +275,32 @@ internal static class Lab4
         {
             File.Delete(path);
         }
+    }
+
+    private static List<string> CreateExampleParticipants()
+    {
+        return new List<string>
+        {
+            "Петров Сергей 9 9 5 7",
+            "Сидорова Анна 8 8 7 5",
+            "Иванова Мария 5 8 6 3",
+            "Смирнов Павел 4 6 4 8",
+            "Орлова Вера 1 2 3 4"
+        };
+    }
+
+    private static List<string> ReadParticipants()
+    {
+        int count = ConsoleInput.ReadInt("Количество участников: ", 0, 100);
+        List<string> participants = new List<string>();
+        Console.WriteLine("Формат строки: Фамилия Имя Балл1 Балл2 Балл3 Балл4");
+
+        for (int i = 0; i < count; i++)
+        {
+            participants.Add(ConsoleInput.ReadRequiredText($"Участник №{i + 1}: "));
+        }
+
+        return participants;
     }
 
     private static void PrintGroup<T>(string name, IEnumerable<T> values)

@@ -23,10 +23,25 @@ internal static class Program
                     return;
                 }
 
-                Point a = choice == 2 ? new Point(-2.75, 2) : ReadPoint("A");
-                Point b = choice == 2 ? new Point(0.25, 6) : ReadPoint("B");
-                int offset = choice == 2 ? 3 : ConsoleInput.ReadInt("Целое смещение: ", int.MinValue, int.MaxValue);
-                PrintOperations(a, b, offset);
+                Point a;
+                Point b;
+                int offset;
+
+                if (choice == 2)
+                {
+                    a = new Point(-2.75, 2);
+                    b = new Point(0.25, 6);
+                    offset = 3;
+                }
+                else
+                {
+                    a = ReadPoint("A");
+                    b = ReadPoint("B");
+                    offset = ConsoleInput.ReadInt("Целое смещение: ", int.MinValue, int.MaxValue);
+                }
+
+                PrintPointDetails(a, b);
+                PrintOperatorResults(a, b, offset);
                 ConsoleInput.WaitForContinue();
             }
         }
@@ -62,7 +77,7 @@ internal static class Program
         }
     }
 
-    private static void PrintOperations(Point a, Point b, int offset)
+    private static void PrintPointDetails(Point a, Point b)
     {
         Point origin = new Point();
         Console.WriteLine("\nЗадание 6 — класс Point");
@@ -72,6 +87,10 @@ internal static class Program
         Console.WriteLine($"После установки X и Y: {origin}");
         Console.WriteLine($"Точки из конструктора с параметрами: A = {a}, B = {b}");
         Console.WriteLine($"A.DistanceTo(B) = {a.DistanceTo(b)}");
+    }
+
+    private static void PrintOperatorResults(Point a, Point b, int offset)
+    {
         Console.WriteLine("\nЗадание 7 — перегрузка операций");
         Point shifted = a;
         Console.WriteLine($"++A = {++shifted}");
