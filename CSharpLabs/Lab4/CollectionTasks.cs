@@ -108,8 +108,8 @@ public static class CollectionTasks
     public static string FindConsonantsInOneWord(string path)
     {
         using StreamReader reader = new StreamReader(path, Encoding.UTF8);
-        HashSet<char> once = new HashSet<char>();
-        HashSet<char> repeated = new HashSet<char>();
+        HashSet<char> seen = new HashSet<char>();
+        HashSet<char> seenInSeveralWords = new HashSet<char>();
         HashSet<char> wordLetters = new HashSet<char>();
         StringBuilder result = new StringBuilder();
         string? line = null;
@@ -122,19 +122,27 @@ public static class CollectionTasks
 
                 foreach (char letter in word.Value)
                 {
-                    if (RussianConsonants.Contains(letter) && wordLetters.Add(letter) &&
-                        !repeated.Contains(letter) && !once.Add(letter))
+                    if (RussianConsonants.Contains(letter))
                     {
-                        once.Remove(letter);
-                        repeated.Add(letter);
+                        wordLetters.Add(letter);
+                    }
+                }
+
+                foreach (char letter in wordLetters)
+                {
+                    if (!seen.Add(letter))
+                    {
+                        seenInSeveralWords.Add(letter);
                     }
                 }
             }
         }
 
+        seen.ExceptWith(seenInSeveralWords);
+
         foreach (char letter in RussianConsonants)
         {
-            if (once.Contains(letter))
+            if (seen.Contains(letter))
             {
                 result.Append(letter);
             }
