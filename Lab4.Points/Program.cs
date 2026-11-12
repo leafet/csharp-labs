@@ -14,31 +14,17 @@ internal static class Program
                 ConsoleInput.ClearScreen();
                 Console.WriteLine("Лабораторная работа №4 — вариант 3, задания 6–7");
                 Console.WriteLine("1 — Ввести точки");
-                Console.WriteLine("2 — Запустить пример");
                 Console.WriteLine("0 — Выход");
-                int choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 2);
+                int choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 1);
 
                 if (choice == 0)
                 {
                     return;
                 }
 
-                Point a;
-                Point b;
-                int offset;
-
-                if (choice == 2)
-                {
-                    a = new Point(-2.75, 2);
-                    b = new Point(0.25, 6);
-                    offset = 3;
-                }
-                else
-                {
-                    a = ReadPoint("A");
-                    b = ReadPoint("B");
-                    offset = ConsoleInput.ReadInt("Целое смещение: ", int.MinValue, int.MaxValue);
-                }
+                Point a = ReadPoint("A");
+                Point b = ReadPoint("B");
+                int offset = ConsoleInput.ReadInt("Целое смещение: ", int.MinValue, int.MaxValue);
 
                 PrintPointDetails(a, b);
                 PrintOperatorResults(a, b, offset);
@@ -82,8 +68,8 @@ internal static class Program
         Point origin = new Point();
         Console.WriteLine("\nЗадание 6 — класс Point");
         Console.WriteLine($"Конструктор без параметров: {origin}");
-        origin.X = 1;
-        origin.Y = -1;
+        origin.X = ReadCoordinate("Новое значение X: ");
+        origin.Y = ReadCoordinate("Новое значение Y: ");
         Console.WriteLine($"После установки X и Y: {origin}");
         Console.WriteLine($"Точки из конструктора с параметрами: A = {a}, B = {b}");
         Console.WriteLine($"A.DistanceTo(B) = {a.DistanceTo(b)}");

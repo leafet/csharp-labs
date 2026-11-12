@@ -1,4 +1,3 @@
-using System.Text;
 using CSharpLabs.Common;
 
 namespace CSharpLabs.Lab4;
@@ -16,9 +15,8 @@ internal static class Lab4
             Console.WriteLine("3 — Заказы посетителей кафе");
             Console.WriteLine("4 — Согласные, встречающиеся в одном слове");
             Console.WriteLine("5 — Лучшие участники многоборья");
-            Console.WriteLine("6 — Примеры заданий 1–5");
             Console.WriteLine("0 — Назад");
-            int choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 6);
+            int choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 5);
 
             if (choice == 0)
             {
@@ -27,17 +25,7 @@ internal static class Lab4
 
             try
             {
-                if (choice == 6)
-                {
-                    for (int task = 1; task <= 5; task++)
-                    {
-                        RunTask(task, true);
-                    }
-                }
-                else
-                {
-                    RunTask(choice, false);
-                }
+                RunTask(choice);
             }
             catch (Exception error) when (IsRecoverable(error))
             {
@@ -48,34 +36,34 @@ internal static class Lab4
         }
     }
 
-    private static void RunTask(int task, bool example)
+    private static void RunTask(int task)
     {
         Console.WriteLine($"\nЗадание {task}, вариант 3");
 
         switch (task)
         {
             case 1:
-                RunSortedLists(example);
+                RunSortedLists();
                 break;
             case 2:
-                RunEqualNeighbors(example);
+                RunEqualNeighbors();
                 break;
             case 3:
-                RunCafe(example);
+                RunCafe();
                 break;
             case 4:
-                RunConsonants(example);
+                RunConsonants();
                 break;
             case 5:
-                RunSports(example);
+                RunSports();
                 break;
         }
     }
 
-    private static void RunSortedLists(bool example)
+    private static void RunSortedLists()
     {
-        List<int> first = example ? new List<int> { -2, 1, 1, 5 } : ReadNumbers("L1", true);
-        List<int> second = example ? new List<int> { -3, 1, 4, 9 } : ReadNumbers("L2", true);
+        List<int> first = ReadNumbers("L1", true);
+        List<int> second = ReadNumbers("L2", true);
 
         PrintGroup("L1", first);
         PrintGroup("L2", second);
@@ -83,11 +71,9 @@ internal static class Lab4
         PrintGroup("После слияния", first);
     }
 
-    private static void RunEqualNeighbors(bool example)
+    private static void RunEqualNeighbors()
     {
-        LinkedList<int> list = example
-            ? new LinkedList<int>(new[] { 1, 2, 1, 2, 1 })
-            : new LinkedList<int>(ReadNumbers("L", false));
+        LinkedList<int> list = new LinkedList<int>(ReadNumbers("L", false));
 
         PrintGroup("L", list);
         Console.WriteLine($"Количество элементов с равными соседями: {CollectionTasks.CountEqualNeighbors(list)}");
@@ -135,26 +121,11 @@ internal static class Lab4
         }
     }
 
-    private static void RunCafe(bool example)
+    private static void RunCafe()
     {
         StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-        List<string> menu;
-        List<HashSet<string>> orders;
-
-        if (example)
-        {
-            menu = new List<string> { "Борщ", "Салат", "Компот" };
-            orders = new List<HashSet<string>>
-            {
-                new HashSet<string>(comparer) { "Борщ", "Салат" },
-                new HashSet<string>(comparer) { "борщ" }
-            };
-        }
-        else
-        {
-            menu = ReadCafeMenu(comparer);
-            orders = ReadCafeOrders(new HashSet<string>(menu, comparer), comparer);
-        }
+        List<string> menu = ReadCafeMenu(comparer);
+        List<HashSet<string>> orders = ReadCafeOrders(new HashSet<string>(menu, comparer), comparer);
 
         PrintGroup("Меню", menu);
 
@@ -218,27 +189,10 @@ internal static class Lab4
         return orders;
     }
 
-    private static void RunConsonants(bool example)
+    private static void RunConsonants()
     {
-        if (!example)
-        {
-            PrintConsonants(ConsoleInput.ReadRequiredText("Путь к текстовому файлу: "));
-            return;
-        }
-
-        const string sample = "Кукушка, кот и ёж.";
-        string path = Path.GetTempFileName();
-
-        try
-        {
-            File.WriteAllText(path, sample, Encoding.UTF8);
-            Console.WriteLine(sample);
-            PrintConsonants(path);
-        }
-        finally
-        {
-            File.Delete(path);
-        }
+        string path = ConsoleInput.ReadRequiredText("Путь к текстовому файлу: ");
+        PrintConsonants(path);
     }
 
     private static void PrintConsonants(string path)
@@ -246,9 +200,9 @@ internal static class Lab4
         PrintGroup("Согласные ровно в одном слове", CollectionTasks.FindConsonantsInOneWord(path));
     }
 
-    private static void RunSports(bool example)
+    private static void RunSports()
     {
-        string? existingPath = example ? null : ConsoleInput.ReadOptionalText("Путь к файлу результатов (Enter — ввести с клавиатуры): ");
+        string? existingPath = ConsoleInput.ReadOptionalText("Путь к файлу результатов (Enter — ввести с клавиатуры): ");
 
         if (existingPath is not null)
         {
@@ -256,7 +210,7 @@ internal static class Lab4
             return;
         }
 
-        List<string> participants = example ? CreateExampleParticipants() : ReadParticipants();
+        List<string> participants = ReadParticipants();
 
         string path = Path.GetTempFileName();
 
@@ -264,29 +218,12 @@ internal static class Lab4
         {
             CollectionTasks.FillSportsFile(path, participants);
 
-            if (example)
-            {
-                Console.WriteLine(File.ReadAllText(path));
-            }
-
             PrintGroup("Лучшие участники", CollectionTasks.FindBestAthletes(path));
         }
         finally
         {
             File.Delete(path);
         }
-    }
-
-    private static List<string> CreateExampleParticipants()
-    {
-        return new List<string>
-        {
-            "Петров Сергей 9 9 5 7",
-            "Сидорова Анна 8 8 7 5",
-            "Иванова Мария 5 8 6 3",
-            "Смирнов Павел 4 6 4 8",
-            "Орлова Вера 1 2 3 4"
-        };
     }
 
     private static List<string> ReadParticipants()
