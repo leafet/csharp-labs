@@ -10,20 +10,24 @@ public static class CollectionTasks
     private const string RussianConsonants = "бвгджзйклмнпрстфхцчшщ";
     private const int MaximumTotalScore = 40;
 
-    public static void MergeSortedLists(List<int> first, List<int> second)
+    public static void MergeSortedLists<T>(List<T> first, List<T> second, IComparer<T>? comparer = null)
     {
-        if (!IsSorted(first) || !IsSorted(second))
+        ArgumentNullException.ThrowIfNull(first);
+        ArgumentNullException.ThrowIfNull(second);
+        comparer ??= Comparer<T>.Default;
+
+        if (!IsSorted(first, comparer) || !IsSorted(second, comparer))
         {
             throw new ArgumentException("Оба списка должны быть упорядочены по возрастанию.");
         }
 
-        List<int> merged = new List<int>(first.Count + second.Count);
+        List<T> merged = new List<T>(first.Count + second.Count);
         int firstIndex = 0;
         int secondIndex = 0;
 
         while (firstIndex < first.Count && secondIndex < second.Count)
         {
-            if (first[firstIndex] <= second[secondIndex])
+            if (comparer.Compare(first[firstIndex], second[secondIndex]) <= 0)
             {
                 merged.Add(first[firstIndex]);
                 firstIndex++;
@@ -51,14 +55,17 @@ public static class CollectionTasks
         first.AddRange(merged);
     }
 
-    public static int CountEqualNeighbors(LinkedList<int> list)
+    public static int CountEqualNeighbors<T>(LinkedList<T> list, IEqualityComparer<T>? comparer = null)
     {
+        ArgumentNullException.ThrowIfNull(list);
+        comparer ??= EqualityComparer<T>.Default;
+
         int count = 0;
-        LinkedListNode<int>? node = list.First?.Next;
+        LinkedListNode<T>? node = list.First?.Next;
 
         while (node is not null && node.Next is not null)
         {
-            if (node.Previous!.Value == node.Next.Value)
+            if (comparer.Equals(node.Previous!.Value, node.Next.Value))
             {
                 count++;
             }
@@ -271,11 +278,11 @@ public static class CollectionTasks
         }
     }
 
-    private static bool IsSorted(List<int> values)
+    private static bool IsSorted<T>(List<T> values, IComparer<T> comparer)
     {
         for (int i = 1; i < values.Count; i++)
         {
-            if (values[i] < values[i - 1])
+            if (comparer.Compare(values[i], values[i - 1]) < 0)
             {
                 return false;
             }

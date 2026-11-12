@@ -41,7 +41,9 @@ public sealed class Point
     public double DistanceTo(Point other)
     {
         ArgumentNullException.ThrowIfNull(other);
-        return double.Hypot(X - other.X, Y - other.Y);
+        double deltaX = X - other.X;
+        double deltaY = Y - other.Y;
+        return Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
     }
 
     public override string ToString()
