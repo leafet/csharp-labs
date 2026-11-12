@@ -107,7 +107,7 @@ public static class CollectionTasks
 
     public static string FindConsonantsInOneWord(string path)
     {
-        using StreamReader reader = new StreamReader(path, Encoding.UTF8);
+        using StreamReader reader = OpenInputFile(path);
         HashSet<char> seen = new HashSet<char>();
         HashSet<char> seenInSeveralWords = new HashSet<char>();
         HashSet<char> wordLetters = new HashSet<char>();
@@ -153,6 +153,7 @@ public static class CollectionTasks
 
     public static void FillSportsFile(string path, IReadOnlyList<string> participants)
     {
+        ValidateFilePath(path);
         ValidateParticipantCount(participants.Count);
 
         foreach (string participant in participants)
@@ -171,7 +172,7 @@ public static class CollectionTasks
 
     public static List<string> FindBestAthletes(string path)
     {
-        using StreamReader reader = new StreamReader(path, Encoding.UTF8);
+        using StreamReader reader = OpenInputFile(path);
         Dictionary<int, List<string>> standings = new Dictionary<int, List<string>>();
         List<string> winners = new List<string>();
         List<string>? tied = null;
@@ -218,6 +219,41 @@ public static class CollectionTasks
         }
 
         return winners;
+    }
+
+    private static StreamReader OpenInputFile(string path)
+    {
+        ValidateFilePath(path);
+
+        try
+        {
+            return new StreamReader(path, Encoding.UTF8);
+        }
+        catch (FileNotFoundException error)
+        {
+            throw new FileNotFoundException($"Входной файл «{path}» не найден.", path, error);
+        }
+        catch (DirectoryNotFoundException error)
+        {
+            throw new DirectoryNotFoundException($"Не найдена папка входного файла «{path}».", error);
+        }
+        catch (UnauthorizedAccessException error)
+        {
+            throw new UnauthorizedAccessException($"Нет доступа к чтению файла «{path}».", error);
+        }
+    }
+
+    private static void ValidateFilePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new ArgumentException("Укажите путь к файлу.", nameof(path));
+        }
+
+        if (Directory.Exists(path))
+        {
+            throw new ArgumentException($"Путь «{path}» указывает на папку. Укажите файл.", nameof(path));
+        }
     }
 
     private static bool IsSorted(List<int> values)
