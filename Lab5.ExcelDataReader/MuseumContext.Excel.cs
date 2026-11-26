@@ -1,7 +1,4 @@
-using System.Data;
 using System.Globalization;
-using System.Text;
-using ExcelDataReader;
 using Lab5.ExcelLibrary.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -12,17 +9,18 @@ public sealed partial class MuseumContext
 {
     public static MuseumContext Load(string path)
     {
-        List<DataTable> tables = ReadTables(path);
+        using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using HSSFWorkbook workbook = new HSSFWorkbook(stream);
 
-        List<Exhibit> exhibits = ReadRows(tables, "Экспонаты", new[] { "ID экспоната", "Название", "Эпоха" })
+        List<Exhibit> exhibits = ReadRows(workbook, "Экспонаты", new[] { "ID экспоната", "Название", "Эпоха" })
             .Select(row => new Exhibit(Integer(row, 0), Text(row, 1), Text(row, 2)))
             .ToList();
 
-        List<Visitor> visitors = ReadRows(tables, "Посетители", new[] { "ID посетителя", "Имя", "Возраст", "Город проживания" })
+        List<Visitor> visitors = ReadRows(workbook, "Посетители", new[] { "ID посетителя", "Имя", "Возраст", "Город проживания" })
             .Select(row => new Visitor(Integer(row, 0), Text(row, 1), Integer(row, 2), Text(row, 3)))
             .ToList();
 
-        List<Ticket> tickets = ReadRows(tables, "Билеты", new[] { "ID билета", "ID экспоната", "ID посетителя", "Дата", "Стоимость" })
+        List<Ticket> tickets = ReadRows(workbook, "Билеты", new[] { "ID билета", "ID экспоната", "ID посетителя", "Дата", "Стоимость" })
             .Select(row => new Ticket(Integer(row, 0), Integer(row, 1), Integer(row, 2), Date(row, 3), Money(row, 4)))
             .ToList();
 
@@ -131,64 +129,64 @@ public sealed partial class MuseumContext
         sheet.CreateFreezePane(0, 1);
     }
 
-    private static List<DataTable> ReadTables(string path)
+    private static IEnumerable<IRow> ReadRows(HSSFWorkbook workbook, string name, string[] headers)
     {
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using IExcelDataReader reader = ExcelReaderFactory.CreateBinaryReader(stream);
-        List<DataTable> tables = new List<DataTable>();
-        DataTable table;
-        object[] values;
-
-        do
-        {
-            table = new DataTable(reader.Name);
-            for (int column = 0; column < reader.FieldCount; column++)
-            {
-                table.Columns.Add($"Column{column + 1}", typeof(object));
-            }
-
-            while (reader.Read())
-            {
-                values = new object[reader.FieldCount];
-                reader.GetValues(values);
-                table.Rows.Add(values);
-            }
-
-            tables.Add(table);
-        }
-        while (reader.NextResult());
-
-        return tables;
-    }
-
-    private static IEnumerable<DataRow> ReadRows(List<DataTable> tables, string name, string[] headers)
-    {
-        DataTable table = tables.SingleOrDefault(item => item.TableName == name)
+        ISheet sheet = workbook.GetSheet(name)
             ?? throw new InvalidDataException($"Отсутствует лист «{name}».");
-        if (table.Columns.Count != headers.Length || table.Rows.Count == 0 ||
-            !headers.Select((header, column) => Equals(table.Rows[0][column], header)).All(equal => equal))
+        IRow header = sheet.GetRow(0)
+            ?? throw new InvalidDataException($"Неверные заголовки на листе «{name}».");
+        ICell? cell;
+        IRow? row;
+
+        for (int column = 0; column < headers.Length; column++)
         {
-            throw new InvalidDataException($"Неверные заголовки на листе «{name}».");
+            cell = header.GetCell(column);
+            if (cell is null || cell.CellType != CellType.String || cell.StringCellValue != headers[column])
+            {
+                throw new InvalidDataException($"Неверные заголовки на листе «{name}».");
+            }
         }
-        return table.AsEnumerable().Skip(1).Where(row => row.ItemArray.Any(value => value != DBNull.Value));
+
+        for (int column = headers.Length; column < header.LastCellNum; column++)
+        {
+            cell = header.GetCell(column);
+            if (cell is not null && cell.CellType != CellType.Blank)
+            {
+                throw new InvalidDataException($"Неверные заголовки на листе «{name}».");
+            }
+        }
+
+        for (int index = 1; index <= sheet.LastRowNum; index++)
+        {
+            row = sheet.GetRow(index);
+            if (row is not null && row.Cells.Any(item => item.CellType != CellType.Blank))
+            {
+                yield return row;
+            }
+        }
     }
 
-    private static string Text(DataRow row, int column)
+    private static string Text(IRow row, int column)
     {
-        return row[column] as string ?? throw new InvalidDataException("Ожидается текст в ячейке Excel.");
+        ICell? cell = row.GetCell(column);
+        if (cell is null || cell.CellType != CellType.String)
+        {
+            throw new InvalidDataException("Ожидается текст в ячейке Excel.");
+        }
+        return cell.StringCellValue;
     }
 
-    private static decimal Money(DataRow row, int column)
+    private static decimal Money(IRow row, int column)
     {
-        if (row[column] is not double number || !double.IsFinite(number))
+        ICell? cell = row.GetCell(column);
+        if (cell is null || cell.CellType != CellType.Numeric || !double.IsFinite(cell.NumericCellValue))
         {
             throw new InvalidDataException("Ожидается число в ячейке Excel.");
         }
-        return Convert.ToDecimal(number);
+        return Convert.ToDecimal(cell.NumericCellValue);
     }
 
-    private static int Integer(DataRow row, int column)
+    private static int Integer(IRow row, int column)
     {
         decimal value = Money(row, column);
         if (value != decimal.Truncate(value))
@@ -198,10 +196,15 @@ public sealed partial class MuseumContext
         return checked((int)value);
     }
 
-    private static DateTime Date(DataRow row, int column)
+    private static DateTime Date(IRow row, int column)
     {
-        return row[column] is DateTime date ? date
-            : throw new InvalidDataException("Ожидается ячейка Excel с форматом даты.");
+        ICell? cell = row.GetCell(column);
+        if (cell is null || cell.CellType != CellType.Numeric || !DateUtil.IsCellDateFormatted(cell))
+        {
+            throw new InvalidDataException("Ожидается ячейка Excel с форматом даты.");
+        }
+        return cell.DateCellValue
+            ?? throw new InvalidDataException("Ожидается ячейка Excel с форматом даты.");
     }
 
     private static void ValidateUnique(IEnumerable<int> ids, string name)

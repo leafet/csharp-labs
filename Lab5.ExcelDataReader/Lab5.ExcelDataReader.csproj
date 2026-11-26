@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="ExcelDataReader" Version="3.9.0" />
         <PackageReference Include="NPOI" Version="2.7.6" />
         <Compile Include="../CSharpLabs/Common/ConsoleInput.cs" Link="Common/ConsoleInput.cs" />
         <None Include="../labs/Lab5/LR5-var3.xls" Link="LR5-var3.xls" CopyToOutputDirectory="PreserveNewest" />

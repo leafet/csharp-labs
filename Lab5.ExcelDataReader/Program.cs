@@ -1,6 +1,5 @@
 using System.Globalization;
 using CSharpLabs.Common;
-using ExcelDataReader.Exceptions;
 using Lab5.ExcelLibrary.Models;
 
 namespace Lab5.ExcelLibrary;
@@ -125,7 +124,7 @@ internal static class Program
         }
 
         return error is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException
-            or NotSupportedException or ExcelReaderException or InvalidOperationException or OverflowException or FormatException;
+            or NotSupportedException or InvalidOperationException or OverflowException or FormatException;
     }
 
     private static int ChooseTable()
