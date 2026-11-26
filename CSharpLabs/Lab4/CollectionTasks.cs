@@ -231,7 +231,6 @@ public static class CollectionTasks
             }
         }
 
-        // Сумма четырёх оценок лежит в диапазоне 0–40: сортировка не нужна.
         for (int score = MaximumTotalScore; score >= 0 && winners.Count < 3; score--)
         {
             if (standings.TryGetValue(score, out List<string>? tied))

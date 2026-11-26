@@ -1,6 +1,6 @@
 # Лабораторные работы по C#
 
-Лабораторные №1–3 и задания 1–5 ЛР4 запускаются из главного меню проекта .NET 10 [CSharpLabs.csproj](CSharpLabs/CSharpLabs.csproj). Задания 6–7 ЛР4 по условию вынесены в отдельный проект [Lab4.Points.csproj](Lab4.Points/Lab4.Points.csproj). Условия, отчёты и снимки запусков находятся в папке `labs`.
+Лабораторные №1–3 и задания 1–5 ЛР4 запускаются из главного меню проекта .NET 10 [CSharpLabs.csproj](CSharpLabs/CSharpLabs.csproj). Задания 6–7 ЛР4 вынесены в отдельный проект [Lab4.Points.csproj](Lab4.Points/Lab4.Points.csproj). ЛР5 находится в проекте .NET 8 [Lab5.ExcelDataReader.csproj](Lab5.ExcelDataReader/Lab5.ExcelDataReader.csproj). Условия и отчёты находятся в папке `labs`.
 
 ```text
 CSharpLabs.sln
@@ -43,6 +43,13 @@ Lab4.Points/
   Lab4.Points.csproj
   Point.cs               # задания 6–7
   Program.cs             # ввод точек и вывод результатов операций
+Lab5.ExcelDataReader/
+  Lab5.ExcelDataReader.csproj
+  Program.cs             # меню и ввод записей
+  MuseumContext.cs       # три таблицы и операции с записями
+  MuseumContext.Excel.cs # чтение и сохранение XLS
+  MuseumQueries.cs       # четыре LINQ-запроса
+  Models/                # Exhibit, Visitor, Ticket
 labs/
   Lab1/
     lab1_csharp.pdf
@@ -62,6 +69,10 @@ labs/
   Lab4/
     lab4_csharp.pdf
     Отчёт_ЛР4.md
+  Lab5/
+    lab5_csharp.pdf
+    LR5-var3.xls
+    Отчёт_ЛР5.md
 ```
 
 | Работа | Код | Материалы |
@@ -70,6 +81,7 @@ labs/
 | № 2, вариант 3 | [CSharpLabs/Lab2](CSharpLabs/Lab2) | [Условие](labs/Lab2/lab2_charp.pdf), [отчёт Markdown](labs/Lab2/Отчёт_ЛР2.md), [отчёт HTML](labs/Lab2/Отчёт_ЛР2.html), [снимки проверок](labs/Lab2/screenshots/live/) |
 | № 3, вариант 3 | [CSharpLabs/Lab3](CSharpLabs/Lab3) | [Условие](labs/Lab3/lab3_csharp.pdf), [отчёт Markdown](labs/Lab3/Отчёт_ЛР3.md), [отчёт HTML](labs/Lab3/Отчёт_ЛР3.html), [результаты запусков](labs/Lab3/screenshots/results/) |
 | № 4, вариант 3 | [Задания 1–5](CSharpLabs/Lab4), [задания 6–7](Lab4.Points) | [Условие](labs/Lab4/lab4_csharp.pdf), [отчёт](labs/Lab4/Отчёт_ЛР4.md) |
+| № 5, вариант 3 | [Lab5.ExcelDataReader](Lab5.ExcelDataReader) | [Условие](labs/Lab5/lab5_csharp.pdf), [отчёт](labs/Lab5/Отчёт_ЛР5.md), [данные XLS](labs/Lab5/LR5-var3.xls) |
 
 В ЛР2 классы объектов находятся в папках соответствующих заданий. Общие классы `PersonFullName` и `Person` находятся в `Task1_Names` и `Task2_People`. Всё меню ЛР2, примеры заданий и сценарии ручного ввода собраны в одном классе `Lab2` в файле `Lab2/Lab2.cs`. Задания 4.5 и 4.6 используют конструкторы этих же классов. Общие вспомогательные классы `ConsoleInput` и `ObjectInput` находятся в `CSharpLabs/Common`, в пространстве имён `CSharpLabs.Common`. `ConsoleInput` проверяет ввод для главного меню, ЛР2 и ЛР3.
 
@@ -82,9 +94,11 @@ dotnet build CSharpLabs.sln
 dotnet run --project CSharpLabs/CSharpLabs.csproj
 ```
 
-Нужен .NET 10 SDK. В главном меню введите `1`, `2`, `3` или `4`; `0` завершает программу. В меню ЛР4 пункты `1`–`5` запускают задания с вводом данных.
+Для ЛР1–4 нужен .NET 10 SDK. В главном меню введите `1`, `2`, `3` или `4`; `0` завершает программу. В меню ЛР4 пункты `1`–`5` запускают задания с вводом данных.
 
 Задания 6–7 ЛР4 запускаются командой `dotnet run --project Lab4.Points/Lab4.Points.csproj`. Выберите `1` для ввода координат и значений свойств точки.
+
+ЛР5 запускается отдельно командой `dotnet run --project Lab5.ExcelDataReader/Lab5.ExcelDataReader.csproj` и требует .NET 8 SDK или более новый SDK с поддержкой сборки .NET 8. При запуске загружается включённый в проект файл XLS. Через меню можно просматривать, добавлять и удалять записи, выполнять четыре запроса и сохранять базу. Программа ЛР5 допускает LINQ, лямбда-выражения и автосвойства; рабочие переменные объявляются до циклов.
 
 В меню ЛР2 пункты 1–5 выводят примеры из условия, созданные из объектов. В обычном терминале экран очищается при переходе между меню; результат задания остаётся на экране до нажатия Enter. При перенаправлении ввода или вывода очистка и пауза отключены. Ввод номеров меню проверяется. Автосвойства, LINQ и лямбда-операторы не используются.
 

@@ -1,5 +1,7 @@
 using System.Data;
 using System.Globalization;
+using System.Text;
+using ExcelDataReader;
 using Lab5.ExcelLibrary.Models;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -10,7 +12,7 @@ public sealed partial class MuseumContext
 {
     public static MuseumContext Load(string path)
     {
-        List<DataTable> tables = ExcelFileReader.Read(path);
+        List<DataTable> tables = ReadTables(path);
 
         List<Exhibit> exhibits = ReadRows(tables, "Экспонаты", new[] { "ID экспоната", "Название", "Эпоха" })
             .Select(row => new Exhibit(Integer(row, 0), Text(row, 1), Text(row, 2)))
@@ -39,7 +41,7 @@ public sealed partial class MuseumContext
         return new MuseumContext(path, exhibits, visitors, tickets);
     }
 
-    public override void SaveChanges(string? path = null)
+    public void SaveChanges(string? path = null)
     {
         path ??= FilePath;
 
@@ -100,29 +102,64 @@ public sealed partial class MuseumContext
         }
 
         int index = 1;
+        IRow row;
+        ICell cell;
+        object value;
         foreach (object[] values in rows)
         {
-            IRow row = sheet.CreateRow(index++);
+            row = sheet.CreateRow(index++);
             for (int column = 0; column < values.Length; column++)
             {
-                ICell cell = row.CreateCell(column);
-                switch (values[column])
+                cell = row.CreateCell(column);
+                value = values[column];
+                if (value is string)
                 {
-                    case string text:
-                        cell.SetCellValue(text);
-                        break;
-                    case DateTime date:
-                        cell.SetCellValue(date);
-                        cell.CellStyle = dateStyle;
-                        break;
-                    default:
-                        cell.SetCellValue(Convert.ToDouble(values[column], CultureInfo.InvariantCulture));
-                        break;
+                    cell.SetCellValue((string)value);
+                }
+                else if (value is DateTime)
+                {
+                    cell.SetCellValue((DateTime)value);
+                    cell.CellStyle = dateStyle;
+                }
+                else
+                {
+                    cell.SetCellValue(Convert.ToDouble(value, CultureInfo.InvariantCulture));
                 }
             }
         }
 
         sheet.CreateFreezePane(0, 1);
+    }
+
+    private static List<DataTable> ReadTables(string path)
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        using FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using IExcelDataReader reader = ExcelReaderFactory.CreateBinaryReader(stream);
+        List<DataTable> tables = new List<DataTable>();
+        DataTable table;
+        object[] values;
+
+        do
+        {
+            table = new DataTable(reader.Name);
+            for (int column = 0; column < reader.FieldCount; column++)
+            {
+                table.Columns.Add($"Column{column + 1}", typeof(object));
+            }
+
+            while (reader.Read())
+            {
+                values = new object[reader.FieldCount];
+                reader.GetValues(values);
+                table.Rows.Add(values);
+            }
+
+            tables.Add(table);
+        }
+        while (reader.NextResult());
+
+        return tables;
     }
 
     private static IEnumerable<DataRow> ReadRows(List<DataTable> tables, string name, string[] headers)

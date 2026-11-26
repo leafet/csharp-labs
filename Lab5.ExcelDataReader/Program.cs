@@ -2,7 +2,6 @@ using System.Globalization;
 using CSharpLabs.Common;
 using ExcelDataReader.Exceptions;
 using Lab5.ExcelLibrary.Models;
-using Lab5.ExcelLibrary.Tasks;
 
 namespace Lab5.ExcelLibrary;
 
@@ -13,6 +12,9 @@ internal static class Program
         string path = args.Length == 0 ? Path.Combine(AppContext.BaseDirectory, "LR5-var3.xls") : args[0];
         MuseumContext? database = null;
         bool changed = false;
+        int choice;
+        string input;
+        string output;
         try
         {
             try
@@ -34,10 +36,9 @@ internal static class Program
                 Console.WriteLine("4 — Удалить запись по ID");
                 Console.WriteLine("5 — Выполнить LINQ-запросы");
                 Console.WriteLine("6 — Сохранить базу в XLS");
-                Console.WriteLine("7 — Изменить запись по ID");
                 Console.WriteLine(changed ? "Есть несохранённые изменения." : "");
                 Console.WriteLine("0 — Выход");
-                int choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 7);
+                choice = ConsoleInput.ReadInt("Выберите пункт: ", 0, 6);
                 try
                 {
                     if (choice == 0)
@@ -55,10 +56,9 @@ internal static class Program
                         {
                             continue;
                         }
-                        string input = ConsoleInput.ReadRequiredText("Путь к XLS: ");
-                        MuseumContext loaded = MuseumContext.Load(input);
-                        database = loaded;
-                            changed = false;
+                        input = ConsoleInput.ReadRequiredText("Путь к XLS: ");
+                        database = MuseumContext.Load(input);
+                        changed = false;
                         Console.WriteLine("База загружена.");
                         continue;
                     }
@@ -70,29 +70,30 @@ internal static class Program
                     }
                     switch (choice)
                     {
-                        case 7:
-                            bool updated = EditRecord(database, true);
-                            changed |= updated;
-                            Console.WriteLine(updated ? "Запись обновлена." : "Запись с таким ID не найдена.");
-                            break;
                         case 2:
                             ShowTable(database);
                             break;
                         case 3:
-                            EditRecord(database, false);
+                            AddRecord(database);
                             changed = true;
                             Console.WriteLine("Запись добавлена.");
                             break;
                         case 4:
-                            bool removed = Delete(database);
-                            changed |= removed;
-                            Console.WriteLine(removed ? "Запись удалена." : "Запись с таким ID не найдена.");
+                            if (Delete(database))
+                            {
+                                changed = true;
+                                Console.WriteLine("Запись удалена.");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Запись с таким ID не найдена.");
+                            }
                             break;
                         case 5:
                             RunQuery(database);
                             break;
                         case 6:
-                            string output = ConsoleInput.ReadOptionalText($"Путь сохранения (Enter — {database.FilePath}): ") ?? database.FilePath;
+                            output = ConsoleInput.ReadOptionalText($"Путь сохранения (Enter — {database.FilePath}): ") ?? database.FilePath;
                             if (File.Exists(output) && ConsoleInput.ReadInt("Файл существует. Заменить? 1 — да, 0 — назад: ", 0, 1) == 0)
                             {
                                 break;
@@ -118,9 +119,13 @@ internal static class Program
 
     private static bool IsDataError(Exception error)
     {
+        if (error is EndOfStreamException)
+        {
+            return false;
+        }
+
         return error is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException
-            or NotSupportedException or ExcelReaderException or InvalidOperationException or OverflowException or FormatException
-            && error is not EndOfStreamException;
+            or NotSupportedException or ExcelReaderException or InvalidOperationException or OverflowException or FormatException;
     }
 
     private static int ChooseTable()
@@ -133,14 +138,13 @@ internal static class Program
     {
         int table = ChooseTable();
         string[] headers = { "ID | Название | Эпоха", "ID | Имя | Возраст | Город проживания", "ID | ID экспоната | ID посетителя | Дата | Стоимость" };
-        IEnumerable<Entity> entities = table switch
+        List<string> rows = table switch
         {
-            1 => database.Exhibits,
-            2 => database.Visitors,
-            _ => database.Tickets
+            1 => database.Exhibits.OrderBy(item => item.Id).Select(item => item.ToString()).ToList(),
+            2 => database.Visitors.OrderBy(item => item.Id).Select(item => item.ToString()).ToList(),
+            _ => database.Tickets.OrderBy(item => item.Id).Select(item => item.ToString()).ToList()
         };
 
-        List<Entity> rows = entities.OrderBy(item => item.Id).ToList();
         Console.WriteLine($"Записей: {rows.Count}");
         if (rows.Count == 0)
         {
@@ -149,13 +153,13 @@ internal static class Program
         int pages = (rows.Count + 19) / 20;
         int page = ConsoleInput.ReadInt($"Страница (1–{pages}): ", 1, pages);
         Console.WriteLine(headers[table - 1]);
-        foreach (Entity row in rows.Skip((page - 1) * 20).Take(20))
+        foreach (string row in rows.Skip((page - 1) * 20).Take(20))
         {
             Console.WriteLine(row);
         }
     }
 
-    private static bool EditRecord(MuseumContext database, bool update)
+    private static void AddRecord(MuseumContext database)
     {
         int table = ChooseTable();
         int id = ConsoleInput.ReadInt("ID: ", 1, int.MaxValue);
@@ -163,32 +167,20 @@ internal static class Program
         {
             case 1:
                 Exhibit item = new Exhibit(id, ConsoleInput.ReadRequiredText("Название: "), ConsoleInput.ReadRequiredText("Эпоха: "));
-                if (update)
-                {
-                    return database.Update(item);
-                }
-                database.Add(item);
-                return true;
+                database.AddExhibit(item);
+                break;
             case 2:
                 string name = ConsoleInput.ReadRequiredText("Имя: ");
                 int age = ConsoleInput.ReadInt("Возраст: ", 0, 150);
                 Visitor visitor = new Visitor(id, name, age, ConsoleInput.ReadRequiredText("Город проживания: "));
-                if (update)
-                {
-                    return database.Update(visitor);
-                }
-                database.Add(visitor);
-                return true;
+                database.AddVisitor(visitor);
+                break;
             case 3:
                 int exhibitId = ConsoleInput.ReadInt("ID экспоната: ", 1, int.MaxValue);
                 int visitorId = ConsoleInput.ReadInt("ID посетителя: ", 1, int.MaxValue);
                 Ticket ticket = new Ticket(id, exhibitId, visitorId, ReadDate(), ReadPrice());
-                if (update)
-                {
-                    return database.Update(ticket);
-                }
-                database.Add(ticket);
-                return true;
+                database.AddTicket(ticket);
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(table));
         }
@@ -200,9 +192,9 @@ internal static class Program
         int id = ConsoleInput.ReadInt("ID удаляемой записи: ", 1, int.MaxValue);
         return table switch
         {
-            1 => database.Remove<Exhibit>(id),
-            2 => database.Remove<Visitor>(id),
-            _ => database.Remove<Ticket>(id)
+            1 => database.RemoveExhibit(id),
+            2 => database.RemoveVisitor(id),
+            _ => database.RemoveTicket(id)
         };
     }
 
@@ -216,16 +208,16 @@ internal static class Program
         switch (query)
         {
             case 1:
-                PrintList(Task1.Execute(database));
+                PrintList(MuseumQueries.RenaissanceExhibits(database));
                 break;
             case 2:
-                Console.WriteLine($"Выручка: {Task2.Execute(database):F2} руб.");
+                Console.WriteLine($"Выручка: {MuseumQueries.RenaissanceRevenue(database):F2} руб.");
                 break;
             case 3:
-                PrintList(Task3.Execute(database));
+                PrintList(MuseumQueries.RenaissanceVisitors(database));
                 break;
             case 4:
-                Console.WriteLine($"Количество билетов: {Task4.Execute(database)}");
+                Console.WriteLine($"Количество билетов: {MuseumQueries.AdultTicketCount(database)}");
                 break;
         }
     }
@@ -241,10 +233,12 @@ internal static class Program
 
     private static DateTime ReadDate()
     {
+        string text;
+        DateTime date;
         while (true)
         {
-            string text = ConsoleInput.ReadRequiredText("Дата (дд.мм.гггг): ");
-            if (DateTime.TryParseExact(text, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date)
+            text = ConsoleInput.ReadRequiredText("Дата (дд.мм.гггг): ");
+            if (DateTime.TryParseExact(text, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date)
                 && date >= new DateTime(1900, 1, 1))
             {
                 return date;
@@ -255,10 +249,12 @@ internal static class Program
 
     private static decimal ReadPrice()
     {
+        string text;
+        decimal price;
         while (true)
         {
-            string text = ConsoleInput.ReadRequiredText("Стоимость, руб.: ").Replace(',', '.');
-            if (decimal.TryParse(text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal price)
+            text = ConsoleInput.ReadRequiredText("Стоимость, руб.: ").Replace(',', '.');
+            if (decimal.TryParse(text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out price)
                 && price >= 0 && price <= 1_000_000_000m && decimal.Round(price, 2) == price)
             {
                 return price;

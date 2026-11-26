@@ -1,14 +1,16 @@
 namespace Lab5.ExcelLibrary.Models;
 
-public sealed class Ticket : Entity
+public sealed class Ticket
 {
+    public int Id { get; }
     public int ExhibitId { get; }
     public int VisitorId { get; }
     public DateTime Date { get; }
     public decimal Price { get; }
 
-    public Ticket(int id, int exhibitId, int visitorId, DateTime date, decimal price) : base(id)
+    public Ticket(int id, int exhibitId, int visitorId, DateTime date, decimal price)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(id);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(exhibitId);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(visitorId);
         ArgumentOutOfRangeException.ThrowIfNegative(price);
@@ -20,6 +22,7 @@ public sealed class Ticket : Entity
         {
             throw new ArgumentOutOfRangeException(nameof(price), "Стоимость должна быть до 1 000 000 000 рублей с точностью до копеек.");
         }
+        Id = id;
         ExhibitId = exhibitId;
         VisitorId = visitorId;
         Date = date.Date;
